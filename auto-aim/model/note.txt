@@ -1,0 +1,46 @@
+﻿# Export Yolo models to ONNX with opset=17
+# .pt => .onnx
+
+
+
+
+
+# Install YOLOv8
+!pip install ultralytics
+
+
+
+
+
+from ultralytics import YOLO
+
+# Load mô hình YOLO pre-trained
+model = YOLO("sunxds_0.5.6.pt")
+
+# Export the model
+model.export(format="onnx", opset=17)
+
+
+
+
+
+# Import necessary libraries
+from ultralytics import YOLO
+import time
+
+# Load mô hình YOLO pre-trained
+model = YOLO("sunxds_0.5.6.onnx")
+
+time_start = time.time()
+
+# Dự đoán trên ảnh
+results = model("https://wstatic-prod.pubg.com/web/live/main_19c8dd8/img/05ea3d0.jpg", save=True)
+# print(results)
+
+time_end = time.time()
+print("Time predict: ", time_end - time_start)
+
+# Hiển thị kết quả
+for r in results:
+    r.show()  # Hiển thị ảnh với bounding boxes
+    print(r.boxes)  # Hiển thị tọa độ của các bounding box

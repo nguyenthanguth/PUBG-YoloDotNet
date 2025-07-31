@@ -1,11 +1,496 @@
 {
   "version": 3,
   "targets": {
-    "net8.0-windows7.0": {}
+    "net8.0-windows7.0": {
+      "Microsoft.ML.OnnxRuntime.Gpu/1.22.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.ML.OnnxRuntime.Gpu.Linux": "1.22.1",
+          "Microsoft.ML.OnnxRuntime.Gpu.Windows": "1.22.1",
+          "Microsoft.ML.OnnxRuntime.Managed": "1.22.1"
+        },
+        "build": {
+          "buildTransitive/netstandard2.1/Microsoft.ML.OnnxRuntime.Gpu.props": {},
+          "buildTransitive/netstandard2.1/Microsoft.ML.OnnxRuntime.Gpu.targets": {}
+        }
+      },
+      "Microsoft.ML.OnnxRuntime.Gpu.Linux/1.22.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.ML.OnnxRuntime.Managed": "1.22.1"
+        },
+        "build": {
+          "buildTransitive/netstandard2.1/Microsoft.ML.OnnxRuntime.Gpu.Linux.props": {},
+          "buildTransitive/netstandard2.1/Microsoft.ML.OnnxRuntime.Gpu.Linux.targets": {}
+        },
+        "runtimeTargets": {
+          "runtimes/linux-x64/native/libonnxruntime.so": {
+            "assetType": "native",
+            "rid": "linux-x64"
+          },
+          "runtimes/linux-x64/native/libonnxruntime_providers_cuda.so": {
+            "assetType": "native",
+            "rid": "linux-x64"
+          },
+          "runtimes/linux-x64/native/libonnxruntime_providers_shared.so": {
+            "assetType": "native",
+            "rid": "linux-x64"
+          },
+          "runtimes/linux-x64/native/libonnxruntime_providers_tensorrt.so": {
+            "assetType": "native",
+            "rid": "linux-x64"
+          }
+        }
+      },
+      "Microsoft.ML.OnnxRuntime.Gpu.Windows/1.22.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.ML.OnnxRuntime.Managed": "1.22.1"
+        },
+        "build": {
+          "buildTransitive/netstandard2.1/Microsoft.ML.OnnxRuntime.Gpu.Windows.props": {},
+          "buildTransitive/netstandard2.1/Microsoft.ML.OnnxRuntime.Gpu.Windows.targets": {}
+        },
+        "runtimeTargets": {
+          "runtimes/win-x64/native/onnxruntime.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/onnxruntime.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/onnxruntime_providers_cuda.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/onnxruntime_providers_cuda.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/onnxruntime_providers_shared.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/onnxruntime_providers_shared.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/onnxruntime_providers_tensorrt.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/onnxruntime_providers_tensorrt.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          }
+        }
+      },
+      "Microsoft.ML.OnnxRuntime.Managed/1.22.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Memory": "4.5.5",
+          "System.Numerics.Tensors": "9.0.0"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.ML.OnnxRuntime.dll": {
+            "related": ".pdb"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.ML.OnnxRuntime.dll": {
+            "related": ".pdb"
+          }
+        },
+        "build": {
+          "build/netstandard2.0/_._": {}
+        }
+      },
+      "SkiaSharp/3.119.0": {
+        "type": "package",
+        "dependencies": {
+          "SkiaSharp.NativeAssets.Win32": "3.119.0",
+          "SkiaSharp.NativeAssets.macOS": "3.119.0"
+        },
+        "compile": {
+          "ref/net8.0/SkiaSharp.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/SkiaSharp.dll": {
+            "related": ".pdb"
+          }
+        }
+      },
+      "SkiaSharp.NativeAssets.macOS/3.119.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/_._": {}
+        },
+        "runtime": {
+          "lib/net8.0/_._": {}
+        },
+        "runtimeTargets": {
+          "runtimes/osx/native/libSkiaSharp.dylib": {
+            "assetType": "native",
+            "rid": "osx"
+          }
+        }
+      },
+      "SkiaSharp.NativeAssets.Win32/3.119.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/_._": {}
+        },
+        "runtime": {
+          "lib/net8.0/_._": {}
+        },
+        "runtimeTargets": {
+          "runtimes/win-arm64/native/libSkiaSharp.dll": {
+            "assetType": "native",
+            "rid": "win-arm64"
+          },
+          "runtimes/win-x64/native/libSkiaSharp.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x86/native/libSkiaSharp.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          }
+        }
+      },
+      "System.Memory/4.5.5": {
+        "type": "package",
+        "compile": {
+          "ref/netcoreapp2.1/_._": {}
+        },
+        "runtime": {
+          "lib/netcoreapp2.1/_._": {}
+        }
+      },
+      "System.Numerics.Tensors/9.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/System.Numerics.Tensors.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/System.Numerics.Tensors.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net8.0/_._": {}
+        }
+      },
+      "YoloDotNet/3.1.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.ML.OnnxRuntime.Gpu": "1.22.1",
+          "SkiaSharp": "3.119.0"
+        },
+        "compile": {
+          "lib/net8.0/YoloDotNet.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/YoloDotNet.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "Microsoft.ML.OnnxRuntime.Gpu/1.22.1": {
+      "sha512": "MzafGR0Rg/SUNbApffFXr/jHm9tyhkJiUMs3F3Ax5I4dZAVb1Len3/0agzkvsW4Nadgs6idEi0jJfvgpBTjZgA==",
+      "type": "package",
+      "path": "microsoft.ml.onnxruntime.gpu/1.22.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "ORT_icon_for_light_bg.png",
+        "Privacy.md",
+        "README.md",
+        "ThirdPartyNotices.txt",
+        "buildTransitive/native/Microsoft.ML.OnnxRuntime.Gpu.props",
+        "buildTransitive/native/Microsoft.ML.OnnxRuntime.Gpu.targets",
+        "buildTransitive/netstandard2.0/Microsoft.ML.OnnxRuntime.Gpu.props",
+        "buildTransitive/netstandard2.0/Microsoft.ML.OnnxRuntime.Gpu.targets",
+        "buildTransitive/netstandard2.1/Microsoft.ML.OnnxRuntime.Gpu.props",
+        "buildTransitive/netstandard2.1/Microsoft.ML.OnnxRuntime.Gpu.targets",
+        "microsoft.ml.onnxruntime.gpu.1.22.1.nupkg.sha512",
+        "microsoft.ml.onnxruntime.gpu.nuspec"
+      ]
+    },
+    "Microsoft.ML.OnnxRuntime.Gpu.Linux/1.22.1": {
+      "sha512": "MyhXOvTTnlnD28AtlXXTZHku3wWpW8/G0diq62VGX1iEg2gnEicEI/YQwJUlNvTEd6UfvXqU4kHfPKE3msynKw==",
+      "type": "package",
+      "path": "microsoft.ml.onnxruntime.gpu.linux/1.22.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "ORT_icon_for_light_bg.png",
+        "Privacy.md",
+        "README.md",
+        "ThirdPartyNotices.txt",
+        "buildTransitive/native/Microsoft.ML.OnnxRuntime.Gpu.Linux.props",
+        "buildTransitive/native/Microsoft.ML.OnnxRuntime.Gpu.Linux.targets",
+        "buildTransitive/native/include/cpu_provider_factory.h",
+        "buildTransitive/native/include/onnxruntime_c_api.h",
+        "buildTransitive/native/include/onnxruntime_cxx_api.h",
+        "buildTransitive/native/include/onnxruntime_cxx_inline.h",
+        "buildTransitive/native/include/onnxruntime_float16.h",
+        "buildTransitive/native/include/onnxruntime_lite_custom_op.h",
+        "buildTransitive/native/include/onnxruntime_run_options_config_keys.h",
+        "buildTransitive/native/include/onnxruntime_session_options_config_keys.h",
+        "buildTransitive/native/include/provider_options.h",
+        "buildTransitive/netstandard2.0/Microsoft.ML.OnnxRuntime.Gpu.Linux.props",
+        "buildTransitive/netstandard2.0/Microsoft.ML.OnnxRuntime.Gpu.Linux.targets",
+        "buildTransitive/netstandard2.1/Microsoft.ML.OnnxRuntime.Gpu.Linux.props",
+        "buildTransitive/netstandard2.1/Microsoft.ML.OnnxRuntime.Gpu.Linux.targets",
+        "microsoft.ml.onnxruntime.gpu.linux.1.22.1.nupkg.sha512",
+        "microsoft.ml.onnxruntime.gpu.linux.nuspec",
+        "runtimes/linux-x64/native/libonnxruntime.so",
+        "runtimes/linux-x64/native/libonnxruntime_providers_cuda.so",
+        "runtimes/linux-x64/native/libonnxruntime_providers_shared.so",
+        "runtimes/linux-x64/native/libonnxruntime_providers_tensorrt.so"
+      ]
+    },
+    "Microsoft.ML.OnnxRuntime.Gpu.Windows/1.22.1": {
+      "sha512": "Y0noN/sjipx8MncQ5dCByQl4HbUdPTRxSR/DVIVy7GkMLr0NKByi/zaC1I1J/+Nv6sCYHzhNF86zA02VC5sp2Q==",
+      "type": "package",
+      "path": "microsoft.ml.onnxruntime.gpu.windows/1.22.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "ORT_icon_for_light_bg.png",
+        "Privacy.md",
+        "README.md",
+        "ThirdPartyNotices.txt",
+        "buildTransitive/native/Microsoft.ML.OnnxRuntime.Gpu.Windows.props",
+        "buildTransitive/native/Microsoft.ML.OnnxRuntime.Gpu.Windows.targets",
+        "buildTransitive/native/include/cpu_provider_factory.h",
+        "buildTransitive/native/include/onnxruntime_c_api.h",
+        "buildTransitive/native/include/onnxruntime_cxx_api.h",
+        "buildTransitive/native/include/onnxruntime_cxx_inline.h",
+        "buildTransitive/native/include/onnxruntime_float16.h",
+        "buildTransitive/native/include/onnxruntime_lite_custom_op.h",
+        "buildTransitive/native/include/onnxruntime_run_options_config_keys.h",
+        "buildTransitive/native/include/onnxruntime_session_options_config_keys.h",
+        "buildTransitive/native/include/provider_options.h",
+        "buildTransitive/netstandard2.0/Microsoft.ML.OnnxRuntime.Gpu.Windows.props",
+        "buildTransitive/netstandard2.0/Microsoft.ML.OnnxRuntime.Gpu.Windows.targets",
+        "buildTransitive/netstandard2.1/Microsoft.ML.OnnxRuntime.Gpu.Windows.props",
+        "buildTransitive/netstandard2.1/Microsoft.ML.OnnxRuntime.Gpu.Windows.targets",
+        "microsoft.ml.onnxruntime.gpu.windows.1.22.1.nupkg.sha512",
+        "microsoft.ml.onnxruntime.gpu.windows.nuspec",
+        "runtimes/win-x64/native/onnxruntime.dll",
+        "runtimes/win-x64/native/onnxruntime.lib",
+        "runtimes/win-x64/native/onnxruntime_providers_cuda.dll",
+        "runtimes/win-x64/native/onnxruntime_providers_cuda.lib",
+        "runtimes/win-x64/native/onnxruntime_providers_shared.dll",
+        "runtimes/win-x64/native/onnxruntime_providers_shared.lib",
+        "runtimes/win-x64/native/onnxruntime_providers_tensorrt.dll",
+        "runtimes/win-x64/native/onnxruntime_providers_tensorrt.lib"
+      ]
+    },
+    "Microsoft.ML.OnnxRuntime.Managed/1.22.1": {
+      "sha512": "hYGYf0BaHiTfb623kD36pYpFN0rh2Znk3QS+ZWWxnTV6iDzl1KUJYaxf7/stz28r1w6HOqUqgWcT1nOYXuf8ew==",
+      "type": "package",
+      "path": "microsoft.ml.onnxruntime.managed/1.22.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "ORT_icon_for_light_bg.png",
+        "Privacy.md",
+        "README.md",
+        "ThirdPartyNotices.txt",
+        "build/netstandard2.0/Microsoft.ML.OnnxRuntime.Managed.targets",
+        "lib/net8.0/Microsoft.ML.OnnxRuntime.dll",
+        "lib/net8.0/Microsoft.ML.OnnxRuntime.pdb",
+        "lib/netstandard2.0/Microsoft.ML.OnnxRuntime.dll",
+        "lib/netstandard2.0/Microsoft.ML.OnnxRuntime.pdb",
+        "microsoft.ml.onnxruntime.managed.1.22.1.nupkg.sha512",
+        "microsoft.ml.onnxruntime.managed.nuspec"
+      ]
+    },
+    "SkiaSharp/3.119.0": {
+      "sha512": "gR9yVoOta2Mc1Rxt15LD65AckfHMfwjIs/3kkD59C9bT2nYYISsE6uz3t4aMPNHA6CgsIL0Ssn+jE5OVilZ1yw==",
+      "type": "package",
+      "path": "skiasharp/3.119.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "README.md",
+        "icon.png",
+        "interactive-extensions/dotnet/SkiaSharp.DotNet.Interactive.dll",
+        "lib/net462/SkiaSharp.dll",
+        "lib/net462/SkiaSharp.pdb",
+        "lib/net6.0/SkiaSharp.dll",
+        "lib/net6.0/SkiaSharp.pdb",
+        "lib/net8.0-android34.0/SkiaSharp.dll",
+        "lib/net8.0-android34.0/SkiaSharp.pdb",
+        "lib/net8.0-android34.0/SkiaSharp.xml",
+        "lib/net8.0-ios17.0/SkiaSharp.dll",
+        "lib/net8.0-ios17.0/SkiaSharp.pdb",
+        "lib/net8.0-maccatalyst17.0/SkiaSharp.dll",
+        "lib/net8.0-maccatalyst17.0/SkiaSharp.pdb",
+        "lib/net8.0-macos14.0/SkiaSharp.dll",
+        "lib/net8.0-macos14.0/SkiaSharp.pdb",
+        "lib/net8.0-tizen7.0/SkiaSharp.dll",
+        "lib/net8.0-tizen7.0/SkiaSharp.pdb",
+        "lib/net8.0-tvos17.0/SkiaSharp.dll",
+        "lib/net8.0-tvos17.0/SkiaSharp.pdb",
+        "lib/net8.0-windows10.0.19041/SkiaSharp.dll",
+        "lib/net8.0-windows10.0.19041/SkiaSharp.pdb",
+        "lib/net8.0/SkiaSharp.dll",
+        "lib/net8.0/SkiaSharp.pdb",
+        "lib/netstandard2.0/SkiaSharp.dll",
+        "lib/netstandard2.0/SkiaSharp.pdb",
+        "lib/netstandard2.1/SkiaSharp.dll",
+        "lib/netstandard2.1/SkiaSharp.pdb",
+        "ref/net462/SkiaSharp.dll",
+        "ref/net6.0/SkiaSharp.dll",
+        "ref/net8.0-android34.0/SkiaSharp.dll",
+        "ref/net8.0-ios17.0/SkiaSharp.dll",
+        "ref/net8.0-maccatalyst17.0/SkiaSharp.dll",
+        "ref/net8.0-macos14.0/SkiaSharp.dll",
+        "ref/net8.0-tizen7.0/SkiaSharp.dll",
+        "ref/net8.0-tvos17.0/SkiaSharp.dll",
+        "ref/net8.0-windows10.0.19041/SkiaSharp.dll",
+        "ref/net8.0/SkiaSharp.dll",
+        "ref/netstandard2.0/SkiaSharp.dll",
+        "ref/netstandard2.1/SkiaSharp.dll",
+        "skiasharp.3.119.0.nupkg.sha512",
+        "skiasharp.nuspec"
+      ]
+    },
+    "SkiaSharp.NativeAssets.macOS/3.119.0": {
+      "sha512": "YE1vNn0Nyw2PWtv7hw1PYkKJO0itFiQp9vSqGppZUKzQJqwp28a2jgdCMPfYtOiR8KCnDgZqQoynqJRRaE2ZVg==",
+      "type": "package",
+      "path": "skiasharp.nativeassets.macos/3.119.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "README.md",
+        "THIRD-PARTY-NOTICES.txt",
+        "build/net462/SkiaSharp.NativeAssets.macOS.targets",
+        "buildTransitive/net462/SkiaSharp.NativeAssets.macOS.targets",
+        "buildTransitive/net8.0-macos14.0/SkiaSharp.NativeAssets.macOS.targets",
+        "icon.png",
+        "lib/net462/_._",
+        "lib/net6.0/_._",
+        "lib/net8.0-macos14.0/_._",
+        "lib/net8.0/_._",
+        "lib/netstandard2.0/_._",
+        "lib/netstandard2.1/_._",
+        "runtimes/osx/native/libSkiaSharp.dylib",
+        "skiasharp.nativeassets.macos.3.119.0.nupkg.sha512",
+        "skiasharp.nativeassets.macos.nuspec"
+      ]
+    },
+    "SkiaSharp.NativeAssets.Win32/3.119.0": {
+      "sha512": "IwC9yx36lOdXVT2DjgmWHl1qkVspfj8ctd4+li8CNnvqdfaTolXCOh6TLznURcPAvzatx9K/tLOB7zT6T8EA9w==",
+      "type": "package",
+      "path": "skiasharp.nativeassets.win32/3.119.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "README.md",
+        "THIRD-PARTY-NOTICES.txt",
+        "build/net462/SkiaSharp.NativeAssets.Win32.targets",
+        "buildTransitive/net462/SkiaSharp.NativeAssets.Win32.targets",
+        "icon.png",
+        "lib/net462/_._",
+        "lib/net6.0-windows10.0.19041/_._",
+        "lib/net6.0/_._",
+        "lib/net8.0-windows10.0.19041/_._",
+        "lib/net8.0/_._",
+        "lib/netstandard2.0/_._",
+        "lib/netstandard2.1/_._",
+        "runtimes/win-arm64/native/libSkiaSharp.dll",
+        "runtimes/win-x64/native/libSkiaSharp.dll",
+        "runtimes/win-x86/native/libSkiaSharp.dll",
+        "skiasharp.nativeassets.win32.3.119.0.nupkg.sha512",
+        "skiasharp.nativeassets.win32.nuspec"
+      ]
+    },
+    "System.Memory/4.5.5": {
+      "sha512": "XIWiDvKPXaTveaB7HVganDlOCRoj03l+jrwNvcge/t8vhGYKvqV+dMv6G4SAX2NoNmN0wZfVPTAlFwZcZvVOUw==",
+      "type": "package",
+      "path": "system.memory/4.5.5",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net461/System.Memory.dll",
+        "lib/net461/System.Memory.xml",
+        "lib/netcoreapp2.1/_._",
+        "lib/netstandard1.1/System.Memory.dll",
+        "lib/netstandard1.1/System.Memory.xml",
+        "lib/netstandard2.0/System.Memory.dll",
+        "lib/netstandard2.0/System.Memory.xml",
+        "ref/netcoreapp2.1/_._",
+        "system.memory.4.5.5.nupkg.sha512",
+        "system.memory.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
+    "System.Numerics.Tensors/9.0.0": {
+      "sha512": "hyJB4UlpAi19Xr9AXzu2NuagKC4lPfHObNMEAA0HmqFz2rX7wKgzeYzO/jM/eBHDhnUGFFEjk5cOoJaxqg5J4A==",
+      "type": "package",
+      "path": "system.numerics.tensors/9.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "PACKAGE.md",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/net461/System.Numerics.Tensors.targets",
+        "buildTransitive/net462/_._",
+        "buildTransitive/net8.0/_._",
+        "buildTransitive/netcoreapp2.0/System.Numerics.Tensors.targets",
+        "lib/net462/System.Numerics.Tensors.dll",
+        "lib/net462/System.Numerics.Tensors.xml",
+        "lib/net8.0/System.Numerics.Tensors.dll",
+        "lib/net8.0/System.Numerics.Tensors.xml",
+        "lib/net9.0/System.Numerics.Tensors.dll",
+        "lib/net9.0/System.Numerics.Tensors.xml",
+        "lib/netstandard2.0/System.Numerics.Tensors.dll",
+        "lib/netstandard2.0/System.Numerics.Tensors.xml",
+        "system.numerics.tensors.9.0.0.nupkg.sha512",
+        "system.numerics.tensors.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "YoloDotNet/3.1.1": {
+      "sha512": "PGH9ZFb+uvXAaYGxHNa1p73Ll22YCiQgkqz4zvX+2s+x3PFlz6oz3IMSi7KzYCTAf2o0AUVDy95EAKlMp5gG5Q==",
+      "type": "package",
+      "path": "yolodotnet/3.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "icon.png",
+        "lib/net8.0/YoloDotNet.dll",
+        "yolodotnet.3.1.1.nupkg.sha512",
+        "yolodotnet.nuspec"
+      ]
+    }
+  },
   "projectFileDependencyGroups": {
-    "net8.0-windows7.0": []
+    "net8.0-windows7.0": [
+      "YoloDotNet >= 3.1.1"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\InuYasha\\.nuget\\packages\\": {},
@@ -56,6 +541,12 @@
     "frameworks": {
       "net8.0-windows7.0": {
         "targetAlias": "net8.0-windows",
+        "dependencies": {
+          "YoloDotNet": {
+            "target": "Package",
+            "version": "[3.1.1, )"
+          }
+        },
         "imports": [
           "net461",
           "net462",

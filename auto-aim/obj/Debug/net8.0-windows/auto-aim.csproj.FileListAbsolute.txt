@@ -15,3 +15,35 @@ C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-win
 C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\auto-aim.pdb
 C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\auto-aim.genruntimeconfig.cache
 C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\ref\auto-aim.dll
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\Microsoft.ML.OnnxRuntime.dll
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\SkiaSharp.dll
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\System.Numerics.Tensors.dll
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\YoloDotNet.dll
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\linux-x64\native\libonnxruntime.so
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\linux-x64\native\libonnxruntime_providers_cuda.so
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\linux-x64\native\libonnxruntime_providers_shared.so
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\linux-x64\native\libonnxruntime_providers_tensorrt.so
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\win-x64\native\onnxruntime.dll
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\win-x64\native\onnxruntime.lib
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\win-x64\native\onnxruntime_providers_cuda.dll
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\win-x64\native\onnxruntime_providers_cuda.lib
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\win-x64\native\onnxruntime_providers_shared.dll
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\win-x64\native\onnxruntime_providers_shared.lib
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\win-x64\native\onnxruntime_providers_tensorrt.dll
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\win-x64\native\onnxruntime_providers_tensorrt.lib
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\osx\native\libSkiaSharp.dylib
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\win-arm64\native\libSkiaSharp.dll
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\win-x64\native\libSkiaSharp.dll
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\runtimes\win-x86\native\libSkiaSharp.dll
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\auto-aim.csproj.AssemblyReference.cache
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\auto-aim.csproj.Up2Date
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\model\sunxds_0.5.6.onnx
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\model\note.txt
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\model\sunxds_0.5.6.pt
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\img\img-test.png
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\font\TCVN 7284 Italic.ttf
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\font\TCVN 7284 Regular.ttf
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\font\tcvn+7284-2003i.ttf
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\font\tcvn+7284-2003r.ttf
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\model\sunxds_0.7.7.onnx
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\model\sunxds_0.7.7.pt

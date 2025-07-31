@@ -13,4 +13,9 @@
     <SourceRoot Include="C:\Users\InuYasha\.nuget\packages\" />
     <SourceRoot Include="C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages\" />
   </ItemGroup>
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.ml.onnxruntime.gpu.windows\1.22.1\buildTransitive\netstandard2.1\Microsoft.ML.OnnxRuntime.Gpu.Windows.props" Condition="Exists('$(NuGetPackageRoot)microsoft.ml.onnxruntime.gpu.windows\1.22.1\buildTransitive\netstandard2.1\Microsoft.ML.OnnxRuntime.Gpu.Windows.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.ml.onnxruntime.gpu.linux\1.22.1\buildTransitive\netstandard2.1\Microsoft.ML.OnnxRuntime.Gpu.Linux.props" Condition="Exists('$(NuGetPackageRoot)microsoft.ml.onnxruntime.gpu.linux\1.22.1\buildTransitive\netstandard2.1\Microsoft.ML.OnnxRuntime.Gpu.Linux.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.ml.onnxruntime.gpu\1.22.1\buildTransitive\netstandard2.1\Microsoft.ML.OnnxRuntime.Gpu.props" Condition="Exists('$(NuGetPackageRoot)microsoft.ml.onnxruntime.gpu\1.22.1\buildTransitive\netstandard2.1\Microsoft.ML.OnnxRuntime.Gpu.props')" />
+  </ImportGroup>
 </Project>

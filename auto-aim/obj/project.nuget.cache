@@ -1,8 +1,19 @@
 {
   "version": 2,
-  "dgSpecHash": "uXzzWqRg0EI=",
+  "dgSpecHash": "K8kcxnLPluA=",
   "success": true,
   "projectFilePath": "C:\\Users\\InuYasha\\Documents\\GitHub\\PUBG-YoloDotNet\\auto-aim\\auto-aim.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\InuYasha\\.nuget\\packages\\microsoft.ml.onnxruntime.gpu\\1.22.1\\microsoft.ml.onnxruntime.gpu.1.22.1.nupkg.sha512",
+    "C:\\Users\\InuYasha\\.nuget\\packages\\microsoft.ml.onnxruntime.gpu.linux\\1.22.1\\microsoft.ml.onnxruntime.gpu.linux.1.22.1.nupkg.sha512",
+    "C:\\Users\\InuYasha\\.nuget\\packages\\microsoft.ml.onnxruntime.gpu.windows\\1.22.1\\microsoft.ml.onnxruntime.gpu.windows.1.22.1.nupkg.sha512",
+    "C:\\Users\\InuYasha\\.nuget\\packages\\microsoft.ml.onnxruntime.managed\\1.22.1\\microsoft.ml.onnxruntime.managed.1.22.1.nupkg.sha512",
+    "C:\\Users\\InuYasha\\.nuget\\packages\\skiasharp\\3.119.0\\skiasharp.3.119.0.nupkg.sha512",
+    "C:\\Users\\InuYasha\\.nuget\\packages\\skiasharp.nativeassets.macos\\3.119.0\\skiasharp.nativeassets.macos.3.119.0.nupkg.sha512",
+    "C:\\Users\\InuYasha\\.nuget\\packages\\skiasharp.nativeassets.win32\\3.119.0\\skiasharp.nativeassets.win32.3.119.0.nupkg.sha512",
+    "C:\\Users\\InuYasha\\.nuget\\packages\\system.memory\\4.5.5\\system.memory.4.5.5.nupkg.sha512",
+    "C:\\Users\\InuYasha\\.nuget\\packages\\system.numerics.tensors\\9.0.0\\system.numerics.tensors.9.0.0.nupkg.sha512",
+    "C:\\Users\\InuYasha\\.nuget\\packages\\yolodotnet\\3.1.1\\yolodotnet.3.1.1.nupkg.sha512"
+  ],
   "logs": []
 }
