@@ -1,0 +1,17 @@
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\auto-aim.exe
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\auto-aim.deps.json
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\auto-aim.runtimeconfig.json
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\auto-aim.dll
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\bin\Debug\net8.0-windows\auto-aim.pdb
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\auto_aim.fMain.resources
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\auto-aim.csproj.GenerateResource.cache
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\auto-aim.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\auto-aim.AssemblyInfoInputs.cache
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\auto-aim.AssemblyInfo.cs
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\auto-aim.csproj.CoreCompileInputs.cache
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\auto-aim.sourcelink.json
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\auto-aim.dll
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\refint\auto-aim.dll
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\auto-aim.pdb
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\auto-aim.genruntimeconfig.cache
+C:\Users\InuYasha\Documents\GitHub\PUBG-YoloDotNet\auto-aim\obj\Debug\net8.0-windows\ref\auto-aim.dll
