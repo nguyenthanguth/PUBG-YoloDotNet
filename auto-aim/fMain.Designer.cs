@@ -47,7 +47,6 @@
             label2 = new Label();
             cbEnableAimHead = new CheckBox();
             cbEnableAimPlayer = new CheckBox();
-            lbTest = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nBitmapW).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nBitmapH).BeginInit();
@@ -68,7 +67,7 @@
             pictureBox.Location = new Point(12, 12);
             pictureBox.Name = "pictureBox";
             pictureBox.Size = new Size(400, 400);
-            pictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
+            pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox.TabIndex = 1;
             pictureBox.TabStop = false;
             // 
@@ -241,15 +240,6 @@
             cbEnableAimPlayer.UseVisualStyleBackColor = true;
             cbEnableAimPlayer.CheckedChanged += cbEnableAimPlayer_CheckedChanged;
             // 
-            // lbTest
-            // 
-            lbTest.AutoSize = true;
-            lbTest.Location = new Point(445, 420);
-            lbTest.Name = "lbTest";
-            lbTest.Size = new Size(91, 15);
-            lbTest.TabIndex = 3;
-            lbTest.Text = "Distance move: ";
-            // 
             // fMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -261,7 +251,6 @@
             Controls.Add(nBitmapW);
             Controls.Add(lbEstimateDistanceHead);
             Controls.Add(lbHeightHead);
-            Controls.Add(lbTest);
             Controls.Add(lbEstimateDistancePlayer);
             Controls.Add(lbWidthHead);
             Controls.Add(lbHeightPlayer);
@@ -306,6 +295,5 @@
         private Label label2;
         private CheckBox cbEnableAimHead;
         private CheckBox cbEnableAimPlayer;
-        private Label lbTest;
     }
 }

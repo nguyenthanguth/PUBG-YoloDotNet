@@ -238,7 +238,7 @@ namespace auto_aim
                             skBitmap.Draw(resultsTemp, _drawingOptions); // _drawingOptions
                         }
 
-                        // draw "+" tại tâm hình ảnh
+                        // draw "+" Yellow tại tâm hình ảnh
                         using (SKCanvas canvas = new SKCanvas(skBitmap))
                         {
                             using SKPaint paint = new SKPaint
@@ -252,7 +252,7 @@ namespace auto_aim
 
                         if (xTarget != 0 && yTarget != 0)
                         {
-                            // draw "+" tại vị trí target
+                            // draw "+" Red tại vị trí target
                             using (SKCanvas canvas = new SKCanvas(skBitmap))
                             {
                                 using SKPaint paint = new SKPaint
@@ -265,17 +265,32 @@ namespace auto_aim
                             }
                         }
 
-                        if (xTarget != 0 && yTarget != 0 && (_enableGun1 || _enableGun2))
-                        {
-                            // move mouse
-                            int centerX = _sizeX / 2;
-                            int centerY = _sizeY / 2;
-                            int deltaX = xTarget - centerX;
-                            int deltaY = yTarget - centerY;
-                            MoveMouse(deltaX, deltaY);
+                        // move mouse
+                        int centerX = _sizeX / 2;
+                        int centerY = _sizeY / 2;
+                        int deltaX = xTarget - centerX;
+                        int deltaY = yTarget - centerY;
 
-                            //Point point = PredictPosition(deltaX, deltaY);
-                            //MoveMouse(point.X, point.Y);
+                        // tìm điểm dự đoán đặt tâm
+                        Point pointPredict = PredictTargetPosition(xTarget, yTarget, deltaX, deltaY);
+                        // draw "+" Green tại vị trí target
+                        using (SKCanvas canvas = new SKCanvas(skBitmap))
+                        {
+                            using SKPaint paint = new SKPaint
+                            {
+                                Color = SKColors.Red,
+                                StrokeWidth = 2,
+                                IsAntialias = true
+                            };
+                            DrawCross(canvas, pointPredict.X, pointPredict.Y, 10, SKColors.Green);
+                        }
+
+                        if (xTarget != 0 && yTarget != 0 && pointPredict != Point.Empty && (_enableGun1 || _enableGun2))
+                        {
+                            // predicted
+                            deltaX = pointPredict.X - centerX;
+                            deltaY = pointPredict.Y - centerY;
+                            SendInput(deltaX, deltaY);
                         }
                     }
                 }
@@ -292,54 +307,53 @@ namespace auto_aim
         }
 
         // predict position
-        private readonly Queue<Point> _recentDeltas = new Queue<Point>();
+        private readonly Queue<Vector2> _recentFrames = new Queue<Vector2>();
         private DateTime _lastDetectionTime = DateTime.MinValue;
         private const int _maxHistory = 10;
-        private const int _detectionTimeoutMs = 1000; // Nếu quá 1000ms không có detection => reset
+        private const int _detectionTimeoutMs = 1000;
 
-        // chưa chính xác. bị lệnh quá xa
-        private Point PredictPosition(int xTarget, int yTarget)
+        public static Vector2 GetAverageVector(Queue<Vector2> vectors)
         {
-            // Kiểm tra thời gian từ lần detection gần nhất
+            if (vectors == null || vectors.Count == 0)
+                return Vector2.Zero;
+
+            Vector2 sum = Vector2.Zero;
+            foreach (var v in vectors)
+            {
+                sum += v;
+            }
+
+            return sum / vectors.Count;
+        }
+
+        /// <summary>
+        /// Dự đoán vị trí tiếp theo của mục tiêu dựa trên lịch sử di chuyển.
+        /// </summary>
+        public Point PredictTargetPosition(int xTarget, int yTarget, int deltaX, int deltaY)
+        {
+            // Nếu không có detection quá lâu thì reset lịch sử
             if ((DateTime.Now - _lastDetectionTime).TotalMilliseconds > _detectionTimeoutMs)
             {
-                _recentDeltas.Clear(); // Reset lịch sử di chuyển nếu không có detection trong thời gian dài
+                _recentFrames.Clear();
             }
 
-            // Lấy tâm ảnh
-            int centerX = _sizeX / 2;
-            int centerY = _sizeY / 2;
-
-            // Tính delta hiện tại
-            int deltaX = xTarget - centerX;
-            int deltaY = yTarget - centerY;
-
-            // Thêm vào hàng đợi
-            _recentDeltas.Enqueue(new Point(deltaX, deltaY));
-            if (_recentDeltas.Count > _maxHistory)
+            // Thêm frame hiện tại
+            _recentFrames.Enqueue(new Vector2(deltaX, deltaY));
+            if (_recentFrames.Count > _maxHistory)
             {
-                _recentDeltas.Dequeue();
+                _recentFrames.Dequeue();
             }
 
-            _lastDetectionTime = DateTime.Now; // Cập nhật thời gian detection gần nhất
+            _lastDetectionTime = DateTime.Now;
 
-            // Tính trung bình hướng di chuyển
-            int avgX = 0, avgY = 0;
-            foreach (var d in _recentDeltas)
+            // Nếu chưa đủ dữ liệu thì không dự đoán
+            if (_recentFrames.Count < 2)
             {
-                avgX += d.X;
-                avgY += d.Y;
+                return new Point(xTarget, yTarget);
             }
 
-            int count = _recentDeltas.Count;
-            avgX /= count;
-            avgY /= count;
-
-            // Dự đoán vị trí tiếp theo (có thể điều chỉnh hệ số dự đoán)
-            int predictX = xTarget + avgX;
-            int predictY = yTarget + avgY;
-
-            return new Point(predictX, predictY);
+            Vector2 vectorPredict = GetAverageVector(_recentFrames);
+            return new Point(xTarget + (int)(vectorPredict.X), yTarget + (int)(vectorPredict.Y));
         }
 
         private void DrawCross(SKCanvas canvas, int x, int y, int size, SKColor color)
@@ -480,10 +494,12 @@ namespace auto_aim
         }
         #endregion
 
-        #region sự kiện của chuột - cách 1: mouse_event => đang sử dụng
+        const uint INPUT_MOUSE = 0;
+        const uint MOUSEEVENTF_MOVE = 0x0001;
+
+        #region sự kiện của chuột - cách 1: mouse_event
         [DllImport("user32.dll")]
         static extern void mouse_event(uint dwFlags, int dx, int dy, uint dwData, UIntPtr dwExtraInfo);
-        const uint MOUSEEVENTF_MOVE = 0x0001;
 
         private static void MoveMouse(int deltaX, int deltaY)
         {
@@ -493,81 +509,48 @@ namespace auto_aim
         {
             mouse_event(MOUSEEVENTF_MOVE, (int)deltaX, (int)deltaY, 0, UIntPtr.Zero);
         }
-
-        // sensitivity: Áp dụng hệ số nhạy chuột nếu muốn (ví dụ: 0.5 hoặc 1.0)
-        private void MoveMouse(int xTarget, int yTarget, double sensitivity = 0.5)
-        {
-            int centerX = _sizeX / 2;
-            int centerY = _sizeY / 2;
-
-            int deltaX = xTarget - centerX;
-            int deltaY = yTarget - centerY;
-
-            deltaX = (int)(deltaX * sensitivity);
-            deltaY = (int)(deltaY * sensitivity);
-
-            mouse_event(MOUSEEVENTF_MOVE, deltaX, deltaY, 0, UIntPtr.Zero);
-        }
         #endregion
 
-        #region sự kiện của chuột - cách 2: SendInput => (MouseMover.MoveMouseToTarget(x, y, sensitivity: 0.5);)
-        private class MouseMover
+        #region sự kiện của chuột - cách 2: SendInput => khuyên dùng
+        [StructLayout(LayoutKind.Sequential)]
+        struct INPUT
         {
-            [StructLayout(LayoutKind.Sequential)]
-            struct INPUT
-            {
-                public uint type;
-                public MOUSEINPUT mi;
-            }
+            public uint type;
+            public MOUSEINPUT mi;
+        }
 
-            [StructLayout(LayoutKind.Sequential)]
-            struct MOUSEINPUT
-            {
-                public int dx;
-                public int dy;
-                public uint mouseData;
-                public uint dwFlags;
-                public uint time;
-                public UIntPtr dwExtraInfo;
-            }
+        [StructLayout(LayoutKind.Sequential)]
+        struct MOUSEINPUT
+        {
+            public int dx;
+            public int dy;
+            public uint mouseData;
+            public uint dwFlags;
+            public uint time;
+            public UIntPtr dwExtraInfo;
+        }
 
-            const uint INPUT_MOUSE = 0;
-            const uint MOUSEEVENTF_MOVE = 0x0001;
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
 
-            [DllImport("user32.dll", SetLastError = true)]
-            static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
+        public static void SendInput(int deltaX, int deltaY)
+        {
+            // Tạo input move tương đối
+            INPUT[] inputs = new INPUT[1];
+            inputs[0].type = INPUT_MOUSE;
+            inputs[0].mi.dx = deltaX;
+            inputs[0].mi.dy = deltaY;
+            inputs[0].mi.dwFlags = MOUSEEVENTF_MOVE;
+            inputs[0].mi.mouseData = 0;
+            inputs[0].mi.time = 0;
+            inputs[0].mi.dwExtraInfo = UIntPtr.Zero;
 
-            public static void MoveMouseToTarget(int targetX, int targetY, double sensitivity = 1.0)
-            {
-                // Lấy kích thước màn hình
-                int screenWidth = GetSystemMetrics(0);
-                int screenHeight = GetSystemMetrics(1);
+            SendInput(1, inputs, Marshal.SizeOf(typeof(INPUT)));
+        }
 
-                // Tính khoảng cách delta từ tâm màn hình đến mục tiêu
-                int centerX = screenWidth / 2;
-                int centerY = screenHeight / 2;
-                int deltaX = targetX - centerX;
-                int deltaY = targetY - centerY;
-
-                // Áp dụng hệ số nhạy chuột (bạn có thể điều chỉnh)
-                deltaX = (int)(deltaX * sensitivity);
-                deltaY = (int)(deltaY * sensitivity);
-
-                // Tạo input move tương đối
-                INPUT[] inputs = new INPUT[1];
-                inputs[0].type = INPUT_MOUSE;
-                inputs[0].mi.dx = deltaX;
-                inputs[0].mi.dy = deltaY;
-                inputs[0].mi.dwFlags = MOUSEEVENTF_MOVE;
-                inputs[0].mi.mouseData = 0;
-                inputs[0].mi.time = 0;
-                inputs[0].mi.dwExtraInfo = UIntPtr.Zero;
-
-                SendInput(1, inputs, Marshal.SizeOf(typeof(INPUT)));
-            }
-
-            [DllImport("user32.dll")]
-            static extern int GetSystemMetrics(int nIndex);
+        public static void SendInput(float deltaX, float deltaY)
+        {
+            SendInput((int)deltaX, (int)deltaY);
         }
         #endregion
     }
