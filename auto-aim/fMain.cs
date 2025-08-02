@@ -17,12 +17,17 @@ using System.Runtime.InteropServices;
 // Vector
 using System.Numerics;
 
+using auto_aim.Properties;
+
 namespace auto_aim
 {
     public partial class fMain : Form
     {
-        private readonly string _modelPath = Path.Combine(Directory.GetCurrentDirectory(), "model", "sunxds_0.7.7.onnx");
-        private readonly Yolo _yolo = default!;
+        // dùng khi chạy model ở dạng .engine (TensorRT)
+        private static string _trtEngineCacheFolder = default!;
+
+        //private readonly string _modelPath = Path.Combine(Directory.GetCurrentDirectory(), "model", "yolo11n.onnx");
+        private Yolo _yolo = default!; // readonly
         private DetectionDrawingOptions _drawingOptions = default!;
         private bool _isRunning { get; set; } = false;
 
@@ -44,25 +49,89 @@ namespace auto_aim
         private bool _enableAimHead { get; set; } = false;
         private bool _enableAimPlayer { get; set; } = false;
 
+        private bool _drawALLDetection { get; set; } = false;
+
+        // tùy chỉnh model
+        private string _executionProvider { get; set; } = "";
+        private string _modelName { get; set; } = "";
+
         public fMain()
         {
             InitializeComponent();
 
-            // set đầu ra cho hình ảnh
+            // create folder for cache
+            CreateOutputFolder();
+
+            // set đầu ra cho hình ảnh khi draw
             SetDrawingOptions();
+        }
 
-            YoloOptions yoloOptions = new YoloOptions()
+        private void InitYolo()
+        {
+            if (string.IsNullOrWhiteSpace(_executionProvider))
             {
-                OnnxModel = _modelPath,
-                ExecutionProvider = new CudaExecutionProvider(GpuId: 0, PrimeGpu: true),
-                ImageResize = ImageResize.Proportional,
-                SamplingOptions = new(SKFilterMode.Nearest, SKMipmapMode.None) // YoloDotNet default
-            };
-            // khởi tạo với contructor readonly
-            _yolo = new Yolo(yoloOptions);
+                MessageBox.Show("ExecutionProvider null"); return;
+            }
+            if (string.IsNullOrWhiteSpace(_modelName))
+            {
+                MessageBox.Show("Model name null"); return;
+            }
+            string modelPath = Path.Combine(Directory.GetCurrentDirectory(), "model", _modelName);
+            if (!File.Exists(modelPath))
+            {
+                MessageBox.Show(modelPath, "not found"); return;
+            }
 
-            // Print model type
-            this.Text = $"Loaded ONNX Model: {_yolo.ModelInfo}";
+            YoloOptions yoloOptions = new YoloOptions();
+            yoloOptions.OnnxModel = modelPath;
+
+            if (_executionProvider == "CudaExecutionProvider") // model .onnx
+            {
+                yoloOptions.ExecutionProvider = new CudaExecutionProvider(GpuId: 0, PrimeGpu: true);
+            }
+            else if (_executionProvider == "TensorRtExecutionProvider") // model .engine
+            {
+                string modelCache = Path.Combine(Directory.GetCurrentDirectory(), "model", Path.GetFileNameWithoutExtension(modelPath) + ".cache");
+                if (File.Exists(modelCache))
+                {
+                    yoloOptions.ExecutionProvider = new TensorRtExecutionProvider()
+                    {
+                        GpuId = 0,
+                        Precision = TrtPrecision.INT8,
+                        BuilderOptimizationLevel = 3,
+                        EngineCachePath = _trtEngineCacheFolder,
+                        EngineCachePrefix = "YoloDotNet",
+                        Int8CalibrationCacheFile = modelCache, // khi precision = INT8
+                    };
+                }
+                else
+                {
+                    yoloOptions.ExecutionProvider = new TensorRtExecutionProvider()
+                    {
+                        GpuId = 0,
+                        Precision = TrtPrecision.FP16,
+                        BuilderOptimizationLevel = 3,
+                        EngineCachePath = _trtEngineCacheFolder,
+                        EngineCachePrefix = "YoloDotNet",
+                    };
+                }
+            }
+
+            yoloOptions.ImageResize = ImageResize.Proportional;
+            yoloOptions.SamplingOptions = new(SKFilterMode.Nearest, SKMipmapMode.None); // YoloDotNet default
+
+            _yolo = new Yolo(yoloOptions);
+            this.Text = $"Loaded ONNX Model: {_yolo.ModelInfo} [{Path.GetFileName(modelPath)}]";
+        }
+
+        private static void CreateOutputFolder()
+        {
+            _trtEngineCacheFolder = Path.Join(Directory.GetCurrentDirectory(), "TensorRT_Engine_Cache");
+
+            var folder = _trtEngineCacheFolder;
+
+            if (Directory.Exists(folder) is false)
+                Directory.CreateDirectory(folder);
         }
 
         private void SetDrawingOptions()
@@ -111,8 +180,18 @@ namespace auto_aim
             };
         }
 
+        private void btApplyModelType_Click(object sender, EventArgs e)
+        {
+            InitYolo();
+        }
+
         private void btStart_Click(object sender, EventArgs e)
         {
+            if (_yolo == default)
+            {
+                MessageBox.Show("Apply ExecutionProvider && Model Name");
+                return;
+            }
             if (_isRunning)
             {
                 MessageBox.Show("Tool is running. Do not start again.");
@@ -137,6 +216,12 @@ namespace auto_aim
             using Bitmap bitmap = new Bitmap(_sizeX, _sizeY);
             using (Graphics g = Graphics.FromImage(bitmap))
             {
+                //// Chất lượng cao nhất
+                //g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                //g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                //g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+
+                // Chụp màn hình
                 g.CopyFromScreen(captureRegion.Location, Point.Empty, captureRegion.Size);
             };
 
@@ -190,22 +275,24 @@ namespace auto_aim
                     List<ObjectDetection> results = _yolo.RunObjectDetection(skBitmap); // 0.5, 0.7
                     if (results.Count > 0)
                     {
+                        if (_drawALLDetection)
+                        {
+                            // draw all detection
+                            skBitmap.Draw(results, _drawingOptions);
+                        }
+
                         // chỉ lấy label name "head" && "player" có giá trị confidence max
                         ObjectDetection headDetection = results.FindAll(f => f.Label.Name == "head").MaxBy(m => m.Confidence);
-                        ObjectDetection playerDetection = results.FindAll(f => f.Label.Name == "player").MaxBy(m => m.Confidence);
+                        ObjectDetection playerDetection = results.FindAll(f => f.Label.Name == "player" || f.Label.Name == "person").MaxBy(m => m.Confidence); // player | person
 
                         // tìm điểm mục tiêu đặt tâm
                         int xTarget = 0, yTarget = 0;
 
                         // draw results detection
-                        List<ObjectDetection> resultsTemp = new List<ObjectDetection>();
+                        List<ObjectDetection> resultsDrawOption = new List<ObjectDetection>();
                         if (playerDetection != null)
                         {
-                            resultsTemp.Add(playerDetection);
-
-                            //this.lbWidthPlayer.Text = $"player width: {playerDetection.BoundingBox.Width}";
-                            //this.lbHeightPlayer.Text = $"player height: {playerDetection.BoundingBox.Height}";
-                            //this.lbEstimateDistancePlayer.Text = $"distance: {00}";
+                            resultsDrawOption.Add(playerDetection);
 
                             // enable aim player
                             if (_enableAimPlayer)
@@ -217,12 +304,7 @@ namespace auto_aim
                         }
                         if (headDetection != null)
                         {
-                            // thêm vào list để draw
-                            resultsTemp.Add(headDetection);
-
-                            //this.lbWidthHead.Text = $"head width: {headDetection.BoundingBox.Width}";
-                            //this.lbHeightHead.Text = $"head height: {headDetection.BoundingBox.Height}";
-                            //this.lbEstimateDistanceHead.Text = $"distance: {00}";
+                            resultsDrawOption.Add(headDetection);
 
                             // enable aim head
                             if (_enableAimHead)
@@ -233,9 +315,9 @@ namespace auto_aim
                             }
                         }
 
-                        if (resultsTemp.Count > 0 && _drawDetection)
+                        if (resultsDrawOption.Count > 0 && _drawDetection)
                         {
-                            skBitmap.Draw(resultsTemp, _drawingOptions); // _drawingOptions
+                            skBitmap.Draw(resultsDrawOption, _drawingOptions); // _drawingOptions
                         }
 
                         // draw "+" Yellow tại tâm hình ảnh
@@ -301,8 +383,8 @@ namespace auto_aim
                 // Cập nhật FPS
                 UpdateFPS();
 
-                // delay tránh max performance | có thể giảm để tăng tốc độ
-                await Task.Delay(10);
+                //// delay tránh max performance | có thể giảm để tăng tốc độ
+                //await Task.Delay(10);
             }
         }
 
@@ -337,17 +419,19 @@ namespace auto_aim
                 _recentFrames.Clear();
             }
 
-            // Thêm frame hiện tại
-            _recentFrames.Enqueue(new Vector2(deltaX, deltaY));
-            if (_recentFrames.Count > _maxHistory)
+            // Chỉ thêm frame nếu có detection hợp lệ
+            if (xTarget != 0 && yTarget != 0)
             {
-                _recentFrames.Dequeue();
+                _recentFrames.Enqueue(new Vector2(deltaX, deltaY));
+                if (_recentFrames.Count > _maxHistory)
+                {
+                    _recentFrames.Dequeue();
+                }
+                _lastDetectionTime = DateTime.Now;
             }
 
-            _lastDetectionTime = DateTime.Now;
-
             // Nếu chưa đủ dữ liệu thì không dự đoán
-            if (_recentFrames.Count < 2)
+            if (_recentFrames.Count < _maxHistory)
             {
                 return new Point(xTarget, yTarget);
             }
@@ -428,6 +512,22 @@ namespace auto_aim
         {
             _enableAimPlayer = cbEnableAimPlayer.Checked;
         }
+
+        private void cbDrawAllDetection_CheckedChanged(object sender, EventArgs e)
+        {
+            _drawALLDetection = cbDrawAllDetection.Checked;
+        }
+
+        private void cbExecutionProvider_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            _executionProvider = cbExecutionProvider.Text;
+        }
+
+        private void cbModel_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            _modelName = cbModelName.Text;
+        }
+
         #endregion
 
         #region sự kiện của phím
@@ -461,7 +561,7 @@ namespace auto_aim
                     cbEnableGun2.Checked = false;
                 }
 
-                else if((GetAsyncKeyState(Keys.F1) & 0x8000) != 0)      // F1: un/check Enable Detection
+                else if ((GetAsyncKeyState(Keys.F1) & 0x8000) != 0)      // F1: un/check Enable Detection
                 {
                     cbEnableDetection.Checked = !cbEnableDetection.Checked;
                     await DelayRecordKeyboardEvent(200);
@@ -472,7 +572,7 @@ namespace auto_aim
                     await DelayRecordKeyboardEvent(200);
                 }
 
-                else if((GetAsyncKeyState(Keys.H) & 0x8000) != 0)       // H: un/check Aim Head
+                else if ((GetAsyncKeyState(Keys.H) & 0x8000) != 0)       // H: un/check Aim Head
                 {
                     cbEnableAimHead.Checked = !cbEnableAimHead.Checked;
                     await DelayRecordKeyboardEvent(200);
@@ -551,6 +651,38 @@ namespace auto_aim
         public static void SendInput(float deltaX, float deltaY)
         {
             SendInput((int)deltaX, (int)deltaY);
+        }
+        #endregion
+
+        #region Save / Load
+        private void fMain_Load(object sender, EventArgs e)
+        {
+            nBitmapW.Value = Settings.Default.snBitmapW;
+            nBitmapH.Value = Settings.Default.snBitmapH;
+
+            cbEnableDetection.Checked = Settings.Default.scbEnableDetection;
+            cbDrawDetection.Checked = Settings.Default.scbDrawDetection;
+            cbEnableAimHead.Checked = Settings.Default.scbEnableAimHead;
+            cbEnableAimPlayer.Checked = Settings.Default.scbEnableAimPlayer;
+
+            cbExecutionProvider.Text = Settings.Default.scbExecutionProvider;
+            cbModelName.Text = Settings.Default.scbModelName;
+        }
+
+        private void fMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Settings.Default.snBitmapW = nBitmapW.Value;
+            Settings.Default.snBitmapH = nBitmapH.Value;
+
+            Settings.Default.scbEnableDetection = cbEnableDetection.Checked;
+            Settings.Default.scbDrawDetection = cbDrawDetection.Checked;
+            Settings.Default.scbEnableAimHead = cbEnableAimHead.Checked;
+            Settings.Default.scbEnableAimPlayer = cbEnableAimPlayer.Checked;
+
+            Settings.Default.scbExecutionProvider = cbExecutionProvider.Text;
+            Settings.Default.scbModelName = cbModelName.Text;
+
+            Settings.Default.Save();
         }
         #endregion
     }

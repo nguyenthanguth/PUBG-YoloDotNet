@@ -32,12 +32,6 @@
             pictureBox = new PictureBox();
             cbDrawDetection = new CheckBox();
             lbFPS = new Label();
-            lbWidthPlayer = new Label();
-            lbHeightPlayer = new Label();
-            lbEstimateDistancePlayer = new Label();
-            lbWidthHead = new Label();
-            lbHeightHead = new Label();
-            lbEstimateDistanceHead = new Label();
             cbEnableDetection = new CheckBox();
             cbEnableGun1 = new CheckBox();
             cbEnableGun2 = new CheckBox();
@@ -47,6 +41,10 @@
             label2 = new Label();
             cbEnableAimHead = new CheckBox();
             cbEnableAimPlayer = new CheckBox();
+            cbDrawAllDetection = new CheckBox();
+            cbExecutionProvider = new ComboBox();
+            cbModelName = new ComboBox();
+            btApplyModelType = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nBitmapW).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nBitmapH).BeginInit();
@@ -90,60 +88,6 @@
             lbFPS.Size = new Size(50, 15);
             lbFPS.TabIndex = 3;
             lbFPS.Text = "FPS: --.-";
-            // 
-            // lbWidthPlayer
-            // 
-            lbWidthPlayer.AutoSize = true;
-            lbWidthPlayer.Location = new Point(445, 338);
-            lbWidthPlayer.Name = "lbWidthPlayer";
-            lbWidthPlayer.Size = new Size(55, 15);
-            lbWidthPlayer.TabIndex = 3;
-            lbWidthPlayer.Text = "Width: --";
-            // 
-            // lbHeightPlayer
-            // 
-            lbHeightPlayer.AutoSize = true;
-            lbHeightPlayer.Location = new Point(445, 353);
-            lbHeightPlayer.Name = "lbHeightPlayer";
-            lbHeightPlayer.Size = new Size(59, 15);
-            lbHeightPlayer.TabIndex = 3;
-            lbHeightPlayer.Text = "Height: --";
-            // 
-            // lbEstimateDistancePlayer
-            // 
-            lbEstimateDistancePlayer.AutoSize = true;
-            lbEstimateDistancePlayer.Location = new Point(445, 368);
-            lbEstimateDistancePlayer.Name = "lbEstimateDistancePlayer";
-            lbEstimateDistancePlayer.Size = new Size(116, 15);
-            lbEstimateDistancePlayer.TabIndex = 3;
-            lbEstimateDistancePlayer.Text = "Estimate Distance: --";
-            // 
-            // lbWidthHead
-            // 
-            lbWidthHead.AutoSize = true;
-            lbWidthHead.Location = new Point(445, 254);
-            lbWidthHead.Name = "lbWidthHead";
-            lbWidthHead.Size = new Size(55, 15);
-            lbWidthHead.TabIndex = 3;
-            lbWidthHead.Text = "Width: --";
-            // 
-            // lbHeightHead
-            // 
-            lbHeightHead.AutoSize = true;
-            lbHeightHead.Location = new Point(445, 269);
-            lbHeightHead.Name = "lbHeightHead";
-            lbHeightHead.Size = new Size(59, 15);
-            lbHeightHead.TabIndex = 3;
-            lbHeightHead.Text = "Height: --";
-            // 
-            // lbEstimateDistanceHead
-            // 
-            lbEstimateDistanceHead.AutoSize = true;
-            lbEstimateDistanceHead.Location = new Point(445, 284);
-            lbEstimateDistanceHead.Name = "lbEstimateDistanceHead";
-            lbEstimateDistanceHead.Size = new Size(116, 15);
-            lbEstimateDistanceHead.TabIndex = 3;
-            lbEstimateDistanceHead.Text = "Estimate Distance: --";
             // 
             // cbEnableDetection
             // 
@@ -240,33 +184,77 @@
             cbEnableAimPlayer.UseVisualStyleBackColor = true;
             cbEnableAimPlayer.CheckedChanged += cbEnableAimPlayer_CheckedChanged;
             // 
+            // cbDrawAllDetection
+            // 
+            cbDrawAllDetection.AutoSize = true;
+            cbDrawAllDetection.Location = new Point(650, 37);
+            cbDrawAllDetection.Name = "cbDrawAllDetection";
+            cbDrawAllDetection.Size = new Size(130, 19);
+            cbDrawAllDetection.TabIndex = 2;
+            cbDrawAllDetection.Text = "Draw ALL Detection";
+            cbDrawAllDetection.UseVisualStyleBackColor = true;
+            cbDrawAllDetection.CheckedChanged += cbDrawAllDetection_CheckedChanged;
+            // 
+            // cbExecutionProvider
+            // 
+            cbExecutionProvider.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbExecutionProvider.FormattingEnabled = true;
+            cbExecutionProvider.Items.AddRange(new object[] { "CudaExecutionProvider", "TensorRtExecutionProvider" });
+            cbExecutionProvider.Location = new Point(445, 333);
+            cbExecutionProvider.Name = "cbExecutionProvider";
+            cbExecutionProvider.Size = new Size(113, 23);
+            cbExecutionProvider.TabIndex = 6;
+            cbExecutionProvider.SelectedIndexChanged += cbExecutionProvider_SelectedIndexChanged;
+            // 
+            // cbModelName
+            // 
+            cbModelName.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbModelName.FormattingEnabled = true;
+            cbModelName.Items.AddRange(new object[] { "sunxds_0.5.6.onnx", "sunxds_0.7.7.onnx", "yolo11n.onnx", "yolov11s.onnx" });
+            cbModelName.Location = new Point(564, 333);
+            cbModelName.Name = "cbModelName";
+            cbModelName.Size = new Size(121, 23);
+            cbModelName.TabIndex = 6;
+            cbModelName.SelectedIndexChanged += cbModel_SelectedIndexChanged;
+            // 
+            // btApplyModelType
+            // 
+            btApplyModelType.Location = new Point(691, 332);
+            btApplyModelType.Name = "btApplyModelType";
+            btApplyModelType.Size = new Size(75, 23);
+            btApplyModelType.TabIndex = 7;
+            btApplyModelType.Text = "Apply";
+            btApplyModelType.UseVisualStyleBackColor = true;
+            btApplyModelType.Click += btApplyModelType_Click;
+            // 
             // fMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 465);
+            Controls.Add(btApplyModelType);
+            Controls.Add(cbModelName);
+            Controls.Add(cbExecutionProvider);
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(nBitmapH);
             Controls.Add(nBitmapW);
-            Controls.Add(lbEstimateDistanceHead);
-            Controls.Add(lbHeightHead);
-            Controls.Add(lbEstimateDistancePlayer);
-            Controls.Add(lbWidthHead);
-            Controls.Add(lbHeightPlayer);
-            Controls.Add(lbWidthPlayer);
             Controls.Add(lbFPS);
             Controls.Add(cbEnableDetection);
             Controls.Add(cbEnableGun2);
             Controls.Add(cbEnableAimPlayer);
             Controls.Add(cbEnableAimHead);
             Controls.Add(cbEnableGun1);
+            Controls.Add(cbDrawAllDetection);
             Controls.Add(cbDrawDetection);
             Controls.Add(pictureBox);
             Controls.Add(btStart);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "fMain";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "YoloDotnet";
+            FormClosing += fMain_FormClosing;
+            Load += fMain_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)nBitmapW).EndInit();
             ((System.ComponentModel.ISupportInitialize)nBitmapH).EndInit();
@@ -280,12 +268,6 @@
         private PictureBox pictureBox;
         private CheckBox cbDrawDetection;
         private Label lbFPS;
-        private Label lbWidthPlayer;
-        private Label lbHeightPlayer;
-        private Label lbEstimateDistancePlayer;
-        private Label lbWidthHead;
-        private Label lbHeightHead;
-        private Label lbEstimateDistanceHead;
         private CheckBox cbEnableDetection;
         private CheckBox cbEnableGun1;
         private CheckBox cbEnableGun2;
@@ -295,5 +277,9 @@
         private Label label2;
         private CheckBox cbEnableAimHead;
         private CheckBox cbEnableAimPlayer;
+        private CheckBox cbDrawAllDetection;
+        private ComboBox cbExecutionProvider;
+        private ComboBox cbModelName;
+        private Button btApplyModelType;
     }
 }
