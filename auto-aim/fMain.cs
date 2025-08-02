@@ -18,6 +18,7 @@ using System.Runtime.InteropServices;
 using System.Numerics;
 
 using auto_aim.Properties;
+using System.Net.NetworkInformation;
 
 namespace auto_aim
 {
@@ -54,6 +55,9 @@ namespace auto_aim
         // tùy chỉnh model
         private string _executionProvider { get; set; } = "";
         private string _modelName { get; set; } = "";
+
+        // enable dự đoán di chuyển
+        private bool _predictMove { get; set; } = false;
 
         public fMain()
         {
@@ -204,6 +208,25 @@ namespace auto_aim
         }
 
         #region detection
+        private Bitmap ScreenshotCenter(int sizeX, int sizeY)
+        {
+            // Tính tọa độ tâm màn hình (Top-Left)
+            int centerX = _screenBounds.Left + (_screenBounds.Width - sizeX) / 2;
+            int centerY = _screenBounds.Top + (_screenBounds.Height - sizeY) / 2;
+
+            Rectangle captureRegion = new Rectangle(centerX, centerY, sizeX, sizeY);
+
+            // Tạo bitmap và chụp
+            Bitmap bitmap = new Bitmap(sizeX, sizeY);
+            using (Graphics g = Graphics.FromImage(bitmap))
+            {
+                // Chụp màn hình
+                g.CopyFromScreen(captureRegion.Location, Point.Empty, captureRegion.Size);
+            };
+
+            return bitmap;
+        }
+
         private SKBitmap ScreenshotCenter()
         {
             // Tính tọa độ tâm màn hình (Top-Left)
@@ -353,18 +376,22 @@ namespace auto_aim
                         int deltaX = xTarget - centerX;
                         int deltaY = yTarget - centerY;
 
-                        // tìm điểm dự đoán đặt tâm
-                        Point pointPredict = PredictTargetPosition(xTarget, yTarget, deltaX, deltaY);
-                        // draw "+" Green tại vị trí target
-                        using (SKCanvas canvas = new SKCanvas(skBitmap))
+                        Point pointPredict = new Point(xTarget, yTarget);
+                        if (_predictMove)
                         {
-                            using SKPaint paint = new SKPaint
+                            // tìm điểm dự đoán đặt tâm
+                            pointPredict = PredictTargetPosition(xTarget, yTarget, deltaX, deltaY);
+                            // draw "+" Green tại vị trí target
+                            using (SKCanvas canvas = new SKCanvas(skBitmap))
                             {
-                                Color = SKColors.Red,
-                                StrokeWidth = 2,
-                                IsAntialias = true
-                            };
-                            DrawCross(canvas, pointPredict.X, pointPredict.Y, 10, SKColors.Green);
+                                using SKPaint paint = new SKPaint
+                                {
+                                    Color = SKColors.Red,
+                                    StrokeWidth = 2,
+                                    IsAntialias = true
+                                };
+                                DrawCross(canvas, pointPredict.X, pointPredict.Y, 10, SKColors.Green);
+                            }
                         }
 
                         if (xTarget != 0 && yTarget != 0 && pointPredict != Point.Empty && (_enableGun1 || _enableGun2))
@@ -528,6 +555,11 @@ namespace auto_aim
             _modelName = cbModelName.Text;
         }
 
+        private void cbPredictMove_CheckedChanged(object sender, EventArgs e)
+        {
+            _predictMove = cbPredictMove.Checked;
+        }
+
         #endregion
 
         #region sự kiện của phím
@@ -580,6 +612,13 @@ namespace auto_aim
                 else if ((GetAsyncKeyState(Keys.P) & 0x8000) != 0)      // P: un/check Aim Player
                 {
                     cbEnableAimPlayer.Checked = !cbEnableAimPlayer.Checked;
+                    await DelayRecordKeyboardEvent(200);
+                }
+
+                else if ((GetAsyncKeyState(Keys.CapsLock) & 0x8000) != 0)      // P: screentshot image 320x320
+                {
+                    using Bitmap bitmap = ScreenshotCenter(320, 320);
+                    bitmap.Save(Path.Combine(Directory.GetCurrentDirectory(), "screentshot", $"{DateTimeOffset.Now.ToUnixTimeMilliseconds()}.png"), System.Drawing.Imaging.ImageFormat.Png);
                     await DelayRecordKeyboardEvent(200);
                 }
 
@@ -685,5 +724,6 @@ namespace auto_aim
             Settings.Default.Save();
         }
         #endregion
+
     }
 }

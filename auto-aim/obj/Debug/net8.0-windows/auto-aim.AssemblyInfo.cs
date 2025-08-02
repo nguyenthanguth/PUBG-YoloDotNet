@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("auto-aim")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6c437378006ebd5dcdfa62af9b221c48dc27817e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b0233e5aefde694a15edc08f0084971b36a61360")]
 [assembly: System.Reflection.AssemblyProductAttribute("auto-aim")]
 [assembly: System.Reflection.AssemblyTitleAttribute("auto-aim")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

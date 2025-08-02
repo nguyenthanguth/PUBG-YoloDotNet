@@ -45,6 +45,7 @@
             cbExecutionProvider = new ComboBox();
             cbModelName = new ComboBox();
             btApplyModelType = new Button();
+            cbPredictMove = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nBitmapW).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nBitmapH).BeginInit();
@@ -227,6 +228,17 @@
             btApplyModelType.UseVisualStyleBackColor = true;
             btApplyModelType.Click += btApplyModelType_Click;
             // 
+            // cbPredictMove
+            // 
+            cbPredictMove.AutoSize = true;
+            cbPredictMove.Location = new Point(487, 407);
+            cbPredictMove.Name = "cbPredictMove";
+            cbPredictMove.Size = new Size(96, 19);
+            cbPredictMove.TabIndex = 2;
+            cbPredictMove.Text = "Predict Move";
+            cbPredictMove.UseVisualStyleBackColor = true;
+            cbPredictMove.CheckedChanged += cbPredictMove_CheckedChanged;
+            // 
             // fMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -245,6 +257,7 @@
             Controls.Add(cbEnableAimPlayer);
             Controls.Add(cbEnableAimHead);
             Controls.Add(cbEnableGun1);
+            Controls.Add(cbPredictMove);
             Controls.Add(cbDrawAllDetection);
             Controls.Add(cbDrawDetection);
             Controls.Add(pictureBox);
@@ -281,5 +294,6 @@
         private ComboBox cbExecutionProvider;
         private ComboBox cbModelName;
         private Button btApplyModelType;
+        private CheckBox cbPredictMove;
     }
 }
