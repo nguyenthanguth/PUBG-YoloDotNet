@@ -34,8 +34,8 @@ namespace auto_aim
 
         // Lấy kích thước màn hình chính
         Rectangle _screenBounds = Screen.PrimaryScreen.Bounds;
-        private int _sizeX { get; set; } = 250;
-        private int _sizeY { get; set; } = 250;
+        private int _sizeX { get; set; } = 320;
+        private int _sizeY { get; set; } = 320;
 
         // Biến để tính FPS
         private readonly Stopwatch _fpsWatch = new Stopwatch();
@@ -615,10 +615,10 @@ namespace auto_aim
                     await DelayRecordKeyboardEvent(200);
                 }
 
-                else if ((GetAsyncKeyState(Keys.CapsLock) & 0x8000) != 0)      // P: screentshot image 320x320
+                else if ((GetAsyncKeyState(Keys.CapsLock) & 0x8000) != 0)      // P: screenshots image
                 {
-                    using Bitmap bitmap = ScreenshotCenter(320, 320);
-                    bitmap.Save(Path.Combine(Directory.GetCurrentDirectory(), "screentshot", $"{DateTimeOffset.Now.ToUnixTimeMilliseconds()}.png"), System.Drawing.Imaging.ImageFormat.Png);
+                    using Bitmap bitmap = ScreenshotCenter(_sizeX, _sizeY);
+                    bitmap.Save(Path.Combine(Directory.GetCurrentDirectory(), "screenshots", $"{DateTimeOffset.Now.ToUnixTimeMilliseconds()}.png"), System.Drawing.Imaging.ImageFormat.Png);
                     await DelayRecordKeyboardEvent(200);
                 }
 
