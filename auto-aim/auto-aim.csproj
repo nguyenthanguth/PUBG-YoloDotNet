@@ -37,6 +37,9 @@
     <None Update="img\img-test.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="model\best.onnx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="model\note.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

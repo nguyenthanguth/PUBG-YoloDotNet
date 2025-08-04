@@ -46,14 +46,18 @@
             cbModelName = new ComboBox();
             btApplyModelType = new Button();
             cbPredictMove = new CheckBox();
+            groupBox1 = new GroupBox();
+            btYoloTrain = new Button();
+            btYoloLabels = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nBitmapW).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nBitmapH).BeginInit();
+            groupBox1.SuspendLayout();
             SuspendLayout();
             // 
             // btStart
             // 
-            btStart.Location = new Point(664, 393);
+            btStart.Location = new Point(642, 252);
             btStart.Name = "btStart";
             btStart.Size = new Size(124, 45);
             btStart.TabIndex = 0;
@@ -201,7 +205,7 @@
             cbExecutionProvider.DropDownStyle = ComboBoxStyle.DropDownList;
             cbExecutionProvider.FormattingEnabled = true;
             cbExecutionProvider.Items.AddRange(new object[] { "CudaExecutionProvider", "TensorRtExecutionProvider" });
-            cbExecutionProvider.Location = new Point(445, 333);
+            cbExecutionProvider.Location = new Point(445, 218);
             cbExecutionProvider.Name = "cbExecutionProvider";
             cbExecutionProvider.Size = new Size(113, 23);
             cbExecutionProvider.TabIndex = 6;
@@ -211,8 +215,7 @@
             // 
             cbModelName.DropDownStyle = ComboBoxStyle.DropDownList;
             cbModelName.FormattingEnabled = true;
-            cbModelName.Items.AddRange(new object[] { "sunxds_0.5.6.onnx", "sunxds_0.7.7.onnx", "yolo11n.onnx", "yolov11s.onnx" });
-            cbModelName.Location = new Point(564, 333);
+            cbModelName.Location = new Point(564, 218);
             cbModelName.Name = "cbModelName";
             cbModelName.Size = new Size(121, 23);
             cbModelName.TabIndex = 6;
@@ -220,7 +223,7 @@
             // 
             // btApplyModelType
             // 
-            btApplyModelType.Location = new Point(691, 332);
+            btApplyModelType.Location = new Point(691, 217);
             btApplyModelType.Name = "btApplyModelType";
             btApplyModelType.Size = new Size(75, 23);
             btApplyModelType.TabIndex = 7;
@@ -231,7 +234,7 @@
             // cbPredictMove
             // 
             cbPredictMove.AutoSize = true;
-            cbPredictMove.Location = new Point(487, 407);
+            cbPredictMove.Location = new Point(540, 266);
             cbPredictMove.Name = "cbPredictMove";
             cbPredictMove.Size = new Size(96, 19);
             cbPredictMove.TabIndex = 2;
@@ -239,11 +242,42 @@
             cbPredictMove.UseVisualStyleBackColor = true;
             cbPredictMove.CheckedChanged += cbPredictMove_CheckedChanged;
             // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(btYoloTrain);
+            groupBox1.Controls.Add(btYoloLabels);
+            groupBox1.Location = new Point(418, 317);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(370, 136);
+            groupBox1.TabIndex = 8;
+            groupBox1.TabStop = false;
+            // 
+            // btYoloTrain
+            // 
+            btYoloTrain.Location = new Point(111, 22);
+            btYoloTrain.Name = "btYoloTrain";
+            btYoloTrain.Size = new Size(99, 30);
+            btYoloTrain.TabIndex = 0;
+            btYoloTrain.Text = "yolo-train-val";
+            btYoloTrain.UseVisualStyleBackColor = true;
+            btYoloTrain.Click += btYoloTrain_Click;
+            // 
+            // btYoloLabels
+            // 
+            btYoloLabels.Location = new Point(6, 22);
+            btYoloLabels.Name = "btYoloLabels";
+            btYoloLabels.Size = new Size(99, 30);
+            btYoloLabels.TabIndex = 0;
+            btYoloLabels.Text = "yolo-labels";
+            btYoloLabels.UseVisualStyleBackColor = true;
+            btYoloLabels.Click += btLabels_Click;
+            // 
             // fMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 465);
+            Controls.Add(groupBox1);
             Controls.Add(btApplyModelType);
             Controls.Add(cbModelName);
             Controls.Add(cbExecutionProvider);
@@ -271,6 +305,7 @@
             ((System.ComponentModel.ISupportInitialize)pictureBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)nBitmapW).EndInit();
             ((System.ComponentModel.ISupportInitialize)nBitmapH).EndInit();
+            groupBox1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -295,5 +330,8 @@
         private ComboBox cbModelName;
         private Button btApplyModelType;
         private CheckBox cbPredictMove;
+        private GroupBox groupBox1;
+        private Button btYoloLabels;
+        private Button btYoloTrain;
     }
 }

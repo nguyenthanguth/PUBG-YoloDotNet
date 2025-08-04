@@ -68,6 +68,8 @@ namespace auto_aim
 
             // set đầu ra cho hình ảnh khi draw
             SetDrawingOptions();
+
+            Task.Run(ScreenshotEvent);
         }
 
         private void InitYolo()
@@ -615,7 +617,22 @@ namespace auto_aim
                     await DelayRecordKeyboardEvent(200);
                 }
 
-                else if ((GetAsyncKeyState(Keys.CapsLock) & 0x8000) != 0)      // P: screenshots image
+                //else if ((GetAsyncKeyState(Keys.CapsLock) & 0x8000) != 0)      // P: screenshots image
+                //{
+                //    using Bitmap bitmap = ScreenshotCenter(_sizeX, _sizeY);
+                //    bitmap.Save(Path.Combine(Directory.GetCurrentDirectory(), "screenshots", $"{DateTimeOffset.Now.ToUnixTimeMilliseconds()}.png"), System.Drawing.Imaging.ImageFormat.Png);
+                //    await DelayRecordKeyboardEvent(200);
+                //}
+
+                await Task.Delay(10); // giảm CPU usage
+            }
+        }
+
+        private async Task ScreenshotEvent()
+        {
+            while (true)
+            {
+                if ((GetAsyncKeyState(Keys.CapsLock) & 0x8000) != 0)      // P: screenshots image
                 {
                     using Bitmap bitmap = ScreenshotCenter(_sizeX, _sizeY);
                     bitmap.Save(Path.Combine(Directory.GetCurrentDirectory(), "screenshots", $"{DateTimeOffset.Now.ToUnixTimeMilliseconds()}.png"), System.Drawing.Imaging.ImageFormat.Png);
@@ -705,6 +722,10 @@ namespace auto_aim
             cbEnableAimPlayer.Checked = Settings.Default.scbEnableAimPlayer;
 
             cbExecutionProvider.Text = Settings.Default.scbExecutionProvider;
+
+            // load model
+            var filesOnnx = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "model"), "*.onnx");
+            cbModelName.Items.AddRange(filesOnnx.Select(f => Path.GetFileName(f)).ToArray());
             cbModelName.Text = Settings.Default.scbModelName;
         }
 
@@ -724,6 +745,73 @@ namespace auto_aim
             Settings.Default.Save();
         }
         #endregion
+
+        private void btLabels_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            fLabels form = new fLabels();
+            form.ShowDialog();
+            this.Show();
+        }
+
+        private static Random random = new Random();
+
+        // 90% train và 10% validation
+        private void btYoloTrain_Click(object sender, EventArgs e)
+        {
+            // Xóa dữ liệu cũ trước
+            ClearDirectory(Path.Combine(Directory.GetCurrentDirectory(), "yolo-train", "images"));
+            ClearDirectory(Path.Combine(Directory.GetCurrentDirectory(), "yolo-train", "labels"));
+            ClearDirectory(Path.Combine(Directory.GetCurrentDirectory(), "yolo-validation", "images"));
+            ClearDirectory(Path.Combine(Directory.GetCurrentDirectory(), "yolo-validation", "labels"));
+
+            // delete cache
+            string trainCache = Path.Combine(Directory.GetCurrentDirectory(), "yolo-train", "labels.cache");
+            string valCache = Path.Combine(Directory.GetCurrentDirectory(), "yolo-validation", "labels.cache");
+            if (File.Exists(trainCache))
+            {
+                File.Delete(trainCache);
+            }
+            if (File.Exists(valCache))
+            {
+                File.Delete(valCache);
+            }
+
+            List<string> fileImages = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "yolo-labels", "images")).ToList();
+            for (int i = 0; i < fileImages.Count; i++)
+            {
+                string fileImage = fileImages[i];
+                string fileLabel = Path.Combine(Directory.GetCurrentDirectory(), "yolo-labels", "labels", Path.GetFileNameWithoutExtension(fileImage) + ".txt");
+
+                // nếu không có label thì bỏ qua
+                if (!File.Exists(fileLabel))
+                    continue;
+
+                // 90% train và 10% validation
+                if (random.NextDouble() <= 0.9)
+                {
+                    File.Copy(fileImage, Path.Combine(Directory.GetCurrentDirectory(), "yolo-train", "images", Path.GetFileName(fileImage)), true);
+                    File.Copy(fileLabel, Path.Combine(Directory.GetCurrentDirectory(), "yolo-train", "labels", Path.GetFileName(fileLabel)), true);
+                }
+                else
+                {
+                    File.Copy(fileImage, Path.Combine(Directory.GetCurrentDirectory(), "yolo-validation", "images", Path.GetFileName(fileImage)), true);
+                    File.Copy(fileLabel, Path.Combine(Directory.GetCurrentDirectory(), "yolo-validation", "labels", Path.GetFileName(fileLabel)), true);
+                }
+            }
+        }
+
+        // Hàm xóa toàn bộ file trong một thư mục
+        private void ClearDirectory(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                foreach (var file in Directory.GetFiles(path))
+                {
+                    File.Delete(file);
+                }
+            }
+        }
 
     }
 }

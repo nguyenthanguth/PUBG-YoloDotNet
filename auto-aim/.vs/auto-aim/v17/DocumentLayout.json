@@ -7,6 +7,14 @@
       "RelativeMoniker": "D:0:0:{0C1D6724-DECA-4781-924D-5CD1A46ED864}|auto-aim.csproj|solutionrelative:fmain.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{0C1D6724-DECA-4781-924D-5CD1A46ED864}|auto-aim.csproj|c:\\users\\inuyasha\\documents\\github\\pubg-yolodotnet\\auto-aim\\flabels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0C1D6724-DECA-4781-924D-5CD1A46ED864}|auto-aim.csproj|solutionrelative:flabels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C1D6724-DECA-4781-924D-5CD1A46ED864}|auto-aim.csproj|c:\\users\\inuyasha\\documents\\github\\pubg-yolodotnet\\auto-aim\\flabels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{0C1D6724-DECA-4781-924D-5CD1A46ED864}|auto-aim.csproj|solutionrelative:flabels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{0C1D6724-DECA-4781-924D-5CD1A46ED864}|auto-aim.csproj|C:\\Users\\InuYasha\\Documents\\GitHub\\PUBG-YoloDotNet\\auto-aim\\fmain.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{0C1D6724-DECA-4781-924D-5CD1A46ED864}|auto-aim.csproj|solutionrelative:fmain.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
@@ -18,8 +26,33 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "fLabels.cs",
+              "DocumentMoniker": "C:\\Users\\InuYasha\\Documents\\GitHub\\PUBG-YoloDotNet\\auto-aim\\fLabels.cs",
+              "RelativeDocumentMoniker": "fLabels.cs",
+              "ToolTip": "C:\\Users\\InuYasha\\Documents\\GitHub\\PUBG-YoloDotNet\\auto-aim\\fLabels.cs",
+              "RelativeToolTip": "fLabels.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAACYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-04T01:09:15.845Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "fLabels.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\InuYasha\\Documents\\GitHub\\PUBG-YoloDotNet\\auto-aim\\fLabels.cs",
+              "RelativeDocumentMoniker": "fLabels.cs",
+              "ToolTip": "C:\\Users\\InuYasha\\Documents\\GitHub\\PUBG-YoloDotNet\\auto-aim\\fLabels.cs [Design]",
+              "RelativeToolTip": "fLabels.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-04T01:09:14.611Z",
+              "EditorCaption": " [Design]"
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -28,21 +61,22 @@
               "RelativeDocumentMoniker": "fMain.cs",
               "ToolTip": "C:\\Users\\InuYasha\\Documents\\GitHub\\PUBG-YoloDotNet\\auto-aim\\fMain.cs",
               "RelativeToolTip": "fMain.cs",
-              "ViewState": "AgIAABkAAAAAAAAAAAAAACcAAAAbAAAAAAAAAA==",
+              "ViewState": "AgIAAFAAAAAAAAAAAAAAAHAAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-31T10:51:07.034Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "fMain.cs [Design]",
               "DocumentMoniker": "C:\\Users\\InuYasha\\Documents\\GitHub\\PUBG-YoloDotNet\\auto-aim\\fMain.cs",
               "RelativeDocumentMoniker": "fMain.cs",
               "ToolTip": "C:\\Users\\InuYasha\\Documents\\GitHub\\PUBG-YoloDotNet\\auto-aim\\fMain.cs [Design]",
               "RelativeToolTip": "fMain.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-31T15:40:14.35Z"
+              "WhenOpened": "2025-07-31T15:40:14.35Z",
+              "EditorCaption": " [Design]"
             }
           ]
         }

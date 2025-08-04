@@ -23,3 +23,5 @@ obj/
 # Other temp
 *.vsidx
 *.tmp
+
+*.png

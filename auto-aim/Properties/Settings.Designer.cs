@@ -118,5 +118,17 @@ namespace auto_aim.Properties {
                 this["scbModelName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-")]
+        public string stbPathLabels {
+            get {
+                return ((string)(this["stbPathLabels"]));
+            }
+            set {
+                this["stbPathLabels"] = value;
+            }
+        }
     }
 }
