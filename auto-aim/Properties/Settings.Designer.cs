@@ -130,5 +130,17 @@ namespace auto_aim.Properties {
                 this["stbPathLabels"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("FP16")]
+        public string scbPrecision {
+            get {
+                return ((string)(this["scbPrecision"]));
+            }
+            set {
+                this["scbPrecision"] = value;
+            }
+        }
     }
 }

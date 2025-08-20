@@ -1,4 +1,7 @@
-﻿# Export Yolo models to ONNX with opset=17
+﻿yolo export model=sunxds_0.7.8.pt format=onnx opset=17
+yolo export model=sunxds_0.7.8.pt format=engine int8=true opset=17
+
+# Export Yolo models to ONNX with opset=17
 # .pt => .onnx
 
 

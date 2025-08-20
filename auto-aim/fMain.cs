@@ -19,6 +19,8 @@ using System.Numerics;
 
 using auto_aim.Properties;
 using System.Net.NetworkInformation;
+using YoloDotNet.Trackers;
+using YoloDotNet.Video;
 
 namespace auto_aim
 {
@@ -30,6 +32,7 @@ namespace auto_aim
         //private readonly string _modelPath = Path.Combine(Directory.GetCurrentDirectory(), "model", "yolo11n.onnx");
         private Yolo _yolo = default!; // readonly
         private DetectionDrawingOptions _drawingOptions = default!;
+
         private bool _isRunning { get; set; } = false;
 
         // Lấy kích thước màn hình chính
@@ -47,10 +50,7 @@ namespace auto_aim
         private bool _drawDetection { get; set; } = false;
         private bool _enableGun1 { get; set; } = false;
         private bool _enableGun2 { get; set; } = false;
-        private bool _enableAimHead { get; set; } = false;
         private bool _enableAimPlayer { get; set; } = false;
-
-        private bool _drawALLDetection { get; set; } = false;
 
         // tùy chỉnh model
         private string _executionProvider { get; set; } = "";
@@ -58,6 +58,13 @@ namespace auto_aim
 
         // enable dự đoán di chuyển
         private bool _predictMove { get; set; } = false;
+
+        // nhấn giữ chuột trái
+        private bool _mouseLeftHold { get; set; } = false;
+        private bool _capslockEnableAutoFocus { get; set; } = false;
+
+        private bool _showPictureBoxDebug { get; set; } = false;
+        private bool _isCircle { get; set; } = false;
 
         public fMain()
         {
@@ -68,8 +75,6 @@ namespace auto_aim
 
             // set đầu ra cho hình ảnh khi draw
             SetDrawingOptions();
-
-            Task.Run(ScreenshotEvent);
         }
 
         private void InitYolo()
@@ -97,29 +102,40 @@ namespace auto_aim
             }
             else if (_executionProvider == "TensorRtExecutionProvider") // model .engine
             {
-                string modelCache = Path.Combine(Directory.GetCurrentDirectory(), "model", Path.GetFileNameWithoutExtension(modelPath) + ".cache");
-                if (File.Exists(modelCache))
+                if (cbPrecision.Text == "INT8")
                 {
+                    string modelCache = Path.Combine(Directory.GetCurrentDirectory(), "model", Path.GetFileNameWithoutExtension(modelPath) + ".cache");
+                    if (File.Exists(modelCache) is false)
+                    {
+                        MessageBox.Show($"File cache {modelCache} not found. Please build file.cache.");
+                        return;
+                    }
+
                     yoloOptions.ExecutionProvider = new TensorRtExecutionProvider()
                     {
                         GpuId = 0,
                         Precision = TrtPrecision.INT8,
-                        BuilderOptimizationLevel = 3,
+                        BuilderOptimizationLevel = 5,
                         EngineCachePath = _trtEngineCacheFolder,
-                        EngineCachePrefix = "YoloDotNet",
+                        EngineCachePrefix = $"{_modelName}_{cbPrecision.Text}",
                         Int8CalibrationCacheFile = modelCache, // khi precision = INT8
                     };
                 }
-                else
+                else if (cbPrecision.Text == "FP16" || cbPrecision.Text == "FP32")
                 {
                     yoloOptions.ExecutionProvider = new TensorRtExecutionProvider()
                     {
                         GpuId = 0,
-                        Precision = TrtPrecision.FP16,
-                        BuilderOptimizationLevel = 3,
+                        Precision = cbPrecision.Text == "FP16" ? TrtPrecision.FP16 : TrtPrecision.FP32,      // highest accuracy
+                        BuilderOptimizationLevel = 5,       // 0 to 5
                         EngineCachePath = _trtEngineCacheFolder,
-                        EngineCachePrefix = "YoloDotNet",
+                        EngineCachePrefix = $"{_modelName}_{cbPrecision.Text}",
                     };
+                }
+                else
+                {
+                    MessageBox.Show("Please select Precision: INT8, FP16 or FP32");
+                    return;
                 }
             }
 
@@ -133,11 +149,10 @@ namespace auto_aim
         private static void CreateOutputFolder()
         {
             _trtEngineCacheFolder = Path.Join(Directory.GetCurrentDirectory(), "TensorRT_Engine_Cache");
-
-            var folder = _trtEngineCacheFolder;
-
-            if (Directory.Exists(folder) is false)
-                Directory.CreateDirectory(folder);
+            if (Directory.Exists(_trtEngineCacheFolder) is false)
+            {
+                Directory.CreateDirectory(_trtEngineCacheFolder);
+            }
         }
 
         private void SetDrawingOptions()
@@ -179,7 +194,7 @@ namespace auto_aim
                 // Drawing the tail only works when tracking is enabled (e.g., using SortTracker).
                 // This is demonstrated in the VideoStream demo.
 
-                // DrawTrackedTail = false,
+                // DrawTrackedTail = true,
                 // TailPaintColorEnd = new(),
                 // ailPaintColorStart = new(),
                 // TailThickness = 0,
@@ -206,30 +221,12 @@ namespace auto_aim
             _isRunning = true;
 
             Task.Run(StartDetection);
+            Task.Run(StartMouseEvent);
             Task.Run(StartKeyboardEvent);
         }
 
         #region detection
-        private Bitmap ScreenshotCenter(int sizeX, int sizeY)
-        {
-            // Tính tọa độ tâm màn hình (Top-Left)
-            int centerX = _screenBounds.Left + (_screenBounds.Width - sizeX) / 2;
-            int centerY = _screenBounds.Top + (_screenBounds.Height - sizeY) / 2;
-
-            Rectangle captureRegion = new Rectangle(centerX, centerY, sizeX, sizeY);
-
-            // Tạo bitmap và chụp
-            Bitmap bitmap = new Bitmap(sizeX, sizeY);
-            using (Graphics g = Graphics.FromImage(bitmap))
-            {
-                // Chụp màn hình
-                g.CopyFromScreen(captureRegion.Location, Point.Empty, captureRegion.Size);
-            };
-
-            return bitmap;
-        }
-
-        private SKBitmap ScreenshotCenter()
+        private SKBitmap ScreenshotCenter(bool is_circle = false)
         {
             // Tính tọa độ tâm màn hình (Top-Left)
             int centerX = _screenBounds.Left + (_screenBounds.Width - _sizeX) / 2;
@@ -237,51 +234,41 @@ namespace auto_aim
 
             Rectangle captureRegion = new Rectangle(centerX, centerY, _sizeX, _sizeY);
 
-            // Tạo bitmap và chụp
+            // Chụp bitmap gốc từ màn hình
             using Bitmap bitmap = new Bitmap(_sizeX, _sizeY);
             using (Graphics g = Graphics.FromImage(bitmap))
             {
-                //// Chất lượng cao nhất
-                //g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                //g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                //g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-
-                // Chụp màn hình
                 g.CopyFromScreen(captureRegion.Location, Point.Empty, captureRegion.Size);
-            };
+            }
 
-            return bitmap.ToSKBitmap();
-        }
+            // Chuyển sang SKBitmap
+            SKBitmap original = bitmap.ToSKBitmap();
 
-        // không tốt về hiệu năng detection
-        private SKBitmap ScreenshotCircle()
-        {
-            // Tính tọa độ trung tâm màn hình
-            int centerX = _screenBounds.Left + (_screenBounds.Width - _sizeX) / 2;
-            int centerY = _screenBounds.Top + (_screenBounds.Height - _sizeY) / 2;
-
-            Rectangle captureRegion = new Rectangle(centerX, centerY, _sizeX, _sizeY);
-
-            // Chụp ảnh bitmap
-            using Bitmap squareBitmap = new Bitmap(_sizeX, _sizeY);
-            using (Graphics g = Graphics.FromImage(squareBitmap))
+            if (!is_circle)
             {
-                g.CopyFromScreen(captureRegion.Location, Point.Empty, captureRegion.Size);
+                return original;
             }
 
             // Tạo bitmap tròn
-            using Bitmap circleBitmap = new Bitmap(_sizeX, _sizeY);
-            using (Graphics g = Graphics.FromImage(circleBitmap))
-            {
-                using (GraphicsPath path = new GraphicsPath())
-                {
-                    path.AddEllipse(0, 0, _sizeX, _sizeY);
-                    g.SetClip(path);
-                    g.DrawImage(squareBitmap, 0, 0);
-                }
-            }
+            SKBitmap circleBitmap = new SKBitmap(_sizeX, _sizeY);
+            using var canvas = new SKCanvas(circleBitmap);
+            canvas.Clear(SKColors.Transparent);
 
-            return circleBitmap.ToSKBitmap();
+            using var paint = new SKPaint
+            {
+                IsAntialias = true,
+            };
+
+            // Tạo path hình tròn
+            var path = new SKPath();
+            float radius = Math.Min(_sizeX, _sizeY) / 2f;
+            path.AddCircle(_sizeX / 2f, _sizeY / 2f, radius);
+            canvas.ClipPath(path, SKClipOperation.Intersect, true);
+
+            // Vẽ ảnh vào canvas với clip tròn
+            canvas.DrawBitmap(original, 0, 0, paint);
+
+            return circleBitmap;
         }
 
         // tự train lại model .onnx khác để đạt độ chính xác cao hơn
@@ -292,146 +279,97 @@ namespace auto_aim
 
             while (true)
             {
-                using SKBitmap skBitmap = ScreenshotCenter();
+                using SKBitmap skBitmap = ScreenshotCenter(_isCircle);
 
                 if (_enableDetection)
                 {
-                    // detection với tỉ lệ confidence > 0.5 (50%)
-                    List<ObjectDetection> results = _yolo.RunObjectDetection(skBitmap); // 0.5, 0.7
+                    List<ObjectDetection> results = _yolo.RunObjectDetection(skBitmap, confidence: 0.55, iou: 0.7).FilterLabels(["player", "person"]);
                     if (results.Count > 0)
                     {
-                        if (_drawALLDetection)
+                        if (_drawDetection)
                         {
                             // draw all detection
                             skBitmap.Draw(results, _drawingOptions);
                         }
 
-                        // chỉ lấy label name "head" && "player" có giá trị confidence max
-                        ObjectDetection headDetection = results.FindAll(f => f.Label.Name == "head").MaxBy(m => m.Confidence);
-                        ObjectDetection playerDetection = results.FindAll(f => f.Label.Name == "player" || f.Label.Name == "person").MaxBy(m => m.Confidence); // player | person
+                        ObjectDetection? playerDetection = results.MaxBy(m => m.BoundingBox.Height); // Confidence
 
-                        // tìm điểm mục tiêu đặt tâm
-                        int xTarget = 0, yTarget = 0;
-
-                        // draw results detection
-                        List<ObjectDetection> resultsDrawOption = new List<ObjectDetection>();
-                        if (playerDetection != null)
+                        if (playerDetection != null && _enableAimPlayer)
                         {
-                            resultsDrawOption.Add(playerDetection);
+                            // tâm bắn sẽ được đặt tại phần ngực (1/3 chiều cao tính từ top)
+                            int xTarget = playerDetection.BoundingBox.MidX;
+                            int yTarget = playerDetection.BoundingBox.Top + (int)((double)(playerDetection.BoundingBox.Height) * 1 / 3);
 
-                            // enable aim player
-                            if (_enableAimPlayer)
+                            if (_drawDetection)
                             {
-                                // tâm bắn sẽ được đặt tại phần ngực (1/3 chiều cao tính từ top)
-                                xTarget = playerDetection.BoundingBox.MidX;
-                                yTarget = playerDetection.BoundingBox.Top + (int)((double)(playerDetection.BoundingBox.Height) * 1 / 3);
+                                // draw "+" Yellow tại tâm hình ảnh
+                                skBitmap.DrawCross(skBitmap.Width / 2, skBitmap.Height / 2, 10, SKColors.Yellow);
+                                // draw "+" Red tại vị trí target
+                                skBitmap.DrawCross(xTarget, yTarget, 10, SKColors.Red);
                             }
-                        }
-                        if (headDetection != null)
-                        {
-                            resultsDrawOption.Add(headDetection);
 
-                            // enable aim head
-                            if (_enableAimHead)
+                            // move mouse
+                            int centerX = skBitmap.Width / 2;
+                            int centerY = skBitmap.Height / 2;
+                            int deltaX = xTarget - centerX;
+                            int deltaY = yTarget - centerY;
+
+                            Point pointPredict = new Point(xTarget, yTarget);
+                            if (_predictMove)
                             {
-                                // tâm bắn sẽ được đặt tại phần cổ
-                                xTarget = headDetection.BoundingBox.MidX;
-                                yTarget = headDetection.BoundingBox.Bottom;
+                                // tìm điểm dự đoán đặt tâm
+                                pointPredict = PredictTargetPosition(xTarget, yTarget, deltaX, deltaY);
+
+                                // draw "+" Green tại vị trí target
+                                skBitmap.DrawCross(pointPredict.X, pointPredict.Y, 10, SKColors.Green);
+
+                                // tính lại delta sau khi có predicted
+                                deltaX = pointPredict.X - centerX;
+                                deltaY = pointPredict.Y - centerY;
                             }
-                        }
 
-                        if (resultsDrawOption.Count > 0 && _drawDetection)
-                        {
-                            skBitmap.Draw(resultsDrawOption, _drawingOptions); // _drawingOptions
-                        }
-
-                        // draw "+" Yellow tại tâm hình ảnh
-                        using (SKCanvas canvas = new SKCanvas(skBitmap))
-                        {
-                            using SKPaint paint = new SKPaint
+                            if (_enableGun1 && _mouseLeftHold) // selected gun 1 && nhấn giữ chuột trái
                             {
-                                Color = SKColors.Yellow,
-                                StrokeWidth = 2,
-                                IsAntialias = true
-                            };
-                            DrawCross(canvas, skBitmap.Width / 2, skBitmap.Height / 2, 10, SKColors.Yellow);
-                        }
-
-                        if (xTarget != 0 && yTarget != 0)
-                        {
-                            // draw "+" Red tại vị trí target
-                            using (SKCanvas canvas = new SKCanvas(skBitmap))
-                            {
-                                using SKPaint paint = new SKPaint
-                                {
-                                    Color = SKColors.Red,
-                                    StrokeWidth = 2,
-                                    IsAntialias = true
-                                };
-                                DrawCross(canvas, xTarget, yTarget, 10, SKColors.Red);
+                                int mouseMoveDown = 25; // 25
+                                SendInput(deltaX, deltaY + mouseMoveDown);
                             }
-                        }
-
-                        // move mouse
-                        int centerX = _sizeX / 2;
-                        int centerY = _sizeY / 2;
-                        int deltaX = xTarget - centerX;
-                        int deltaY = yTarget - centerY;
-
-                        Point pointPredict = new Point(xTarget, yTarget);
-                        if (_predictMove)
-                        {
-                            // tìm điểm dự đoán đặt tâm
-                            pointPredict = PredictTargetPosition(xTarget, yTarget, deltaX, deltaY);
-                            // draw "+" Green tại vị trí target
-                            using (SKCanvas canvas = new SKCanvas(skBitmap))
+                            else if (_enableGun2 && _capslockEnableAutoFocus)  // selected gun 2 && bật CAPSLOCK để auto focus
                             {
-                                using SKPaint paint = new SKPaint
-                                {
-                                    Color = SKColors.Red,
-                                    StrokeWidth = 2,
-                                    IsAntialias = true
-                                };
-                                DrawCross(canvas, pointPredict.X, pointPredict.Y, 10, SKColors.Green);
+                                int mouseMoveDown = 0;
+                                SendInput(deltaX, deltaY + mouseMoveDown);
                             }
-                        }
-
-                        if (xTarget != 0 && yTarget != 0 && pointPredict != Point.Empty && (_enableGun1 || _enableGun2))
-                        {
-                            // predicted
-                            deltaX = pointPredict.X - centerX;
-                            deltaY = pointPredict.Y - centerY;
-                            SendInput(deltaX, deltaY);
                         }
                     }
                 }
 
-                // show pictureBox
-                pictureBox.Image = skBitmap.ToBitmap();
+                if (_showPictureBoxDebug)
+                {
+                    // show pictureBox
+                    pictureBox.Image = skBitmap.ToBitmap();
+                }
 
                 // Cập nhật FPS
                 UpdateFPS();
-
-                //// delay tránh max performance | có thể giảm để tăng tốc độ
-                //await Task.Delay(10);
             }
         }
 
         // predict position
         private readonly Queue<Vector2> _recentFrames = new Queue<Vector2>();
         private DateTime _lastDetectionTime = DateTime.MinValue;
-        private const int _maxHistory = 10;
+        private const int _maxHistory = 25;
         private const int _detectionTimeoutMs = 1000;
 
         public static Vector2 GetAverageVector(Queue<Vector2> vectors)
         {
             if (vectors == null || vectors.Count == 0)
+            {
                 return Vector2.Zero;
+            }
 
             Vector2 sum = Vector2.Zero;
-            foreach (var v in vectors)
+            foreach (Vector2 vector in vectors)
             {
-                sum += v;
+                sum += vector;
             }
 
             return sum / vectors.Count;
@@ -440,6 +378,9 @@ namespace auto_aim
         /// <summary>
         /// Dự đoán vị trí tiếp theo của mục tiêu dựa trên lịch sử di chuyển.
         /// </summary>
+        /// <returns>
+        /// xTarget, yTarget: Tọa độ mục tiêu dự đoán
+        /// <returns>
         public Point PredictTargetPosition(int xTarget, int yTarget, int deltaX, int deltaY)
         {
             // Nếu không có detection quá lâu thì reset lịch sử
@@ -448,8 +389,8 @@ namespace auto_aim
                 _recentFrames.Clear();
             }
 
-            // Chỉ thêm frame nếu có detection hợp lệ
-            if (xTarget != 0 && yTarget != 0)
+            //// Chỉ thêm frame nếu có detection hợp lệ
+            //if (xTarget != 0 && yTarget != 0)
             {
                 _recentFrames.Enqueue(new Vector2(deltaX, deltaY));
                 if (_recentFrames.Count > _maxHistory)
@@ -467,18 +408,6 @@ namespace auto_aim
 
             Vector2 vectorPredict = GetAverageVector(_recentFrames);
             return new Point(xTarget + (int)(vectorPredict.X), yTarget + (int)(vectorPredict.Y));
-        }
-
-        private void DrawCross(SKCanvas canvas, int x, int y, int size, SKColor color)
-        {
-            using var paint = new SKPaint
-            {
-                Color = color,
-                StrokeWidth = 2,
-                IsAntialias = true
-            };
-            canvas.DrawLine(x - size, y, x + size, y, paint); // draw ngang
-            canvas.DrawLine(x, y - size, x, y + size, paint); // draw dọc
         }
 
         private void UpdateFPS()
@@ -532,19 +461,9 @@ namespace auto_aim
             _sizeY = (int)nBitmapH.Value;
         }
 
-        private void cbEnableAimHead_CheckedChanged(object sender, EventArgs e)
-        {
-            _enableAimHead = cbEnableAimHead.Checked;
-        }
-
         private void cbEnableAimPlayer_CheckedChanged(object sender, EventArgs e)
         {
             _enableAimPlayer = cbEnableAimPlayer.Checked;
-        }
-
-        private void cbDrawAllDetection_CheckedChanged(object sender, EventArgs e)
-        {
-            _drawALLDetection = cbDrawAllDetection.Checked;
         }
 
         private void cbExecutionProvider_SelectedIndexChanged(object sender, EventArgs e)
@@ -562,16 +481,55 @@ namespace auto_aim
             _predictMove = cbPredictMove.Checked;
         }
 
+        private void cbShowView_CheckedChanged(object sender, EventArgs e)
+        {
+            _showPictureBoxDebug = cbShowPictureBoxDebug.Checked;
+        }
+
+        private void cbAutoFocus_CheckedChanged(object sender, EventArgs e)
+        {
+            _capslockEnableAutoFocus = cbAutoFocus.Checked;
+        }
+
+        private void cbIsCircle_CheckedChanged(object sender, EventArgs e)
+        {
+            _isCircle = cbIsCircle.Checked;
+        }
         #endregion
 
         #region sự kiện của phím
         [DllImport("user32.dll")]
         private static extern short GetAsyncKeyState(Keys vKey);
 
+        private async Task StartMouseEvent()
+        {
+            while (true)
+            {
+                // Kiểm tra nếu chuột trái được nhấn giữ
+                if ((GetAsyncKeyState(Keys.LButton) & 0x8000) != 0)
+                {
+                    _mouseLeftHold = true;
+                }
+                else
+                {
+                    _mouseLeftHold = false;
+                }
+
+                await Task.Delay(10); // giảm CPU usage
+            }
+        }
+
         private async Task StartKeyboardEvent()
         {
             while (true)
             {
+                // Kiểm tra nếu phím CapsLock trái được nhấn
+                if ((GetAsyncKeyState(Keys.CapsLock) & 0x8000) != 0)
+                {
+                    cbAutoFocus.Checked = !cbAutoFocus.Checked;
+                    await DelayRecordKeyboardEvent(200);
+                }
+
                 // Kiểm tra nếu phím "1" được nhấn
                 if ((GetAsyncKeyState(Keys.D1) & 0x8000) != 0)          // 1
                 {
@@ -589,6 +547,7 @@ namespace auto_aim
                     (GetAsyncKeyState(Keys.D4) & 0x8000) != 0 ||        // 4
                     (GetAsyncKeyState(Keys.D5) & 0x8000) != 0 ||        // 5
                     (GetAsyncKeyState(Keys.Oem3) & 0x8000) != 0 ||      // ~
+                    (GetAsyncKeyState(Keys.X) & 0x8000) != 0 ||         // X
                     (GetAsyncKeyState(Keys.G) & 0x8000) != 0)           // G
                 {
                     cbEnableGun1.Checked = false;
@@ -605,37 +564,9 @@ namespace auto_aim
                     cbDrawDetection.Checked = !cbDrawDetection.Checked;
                     await DelayRecordKeyboardEvent(200);
                 }
-
-                else if ((GetAsyncKeyState(Keys.H) & 0x8000) != 0)       // H: un/check Aim Head
-                {
-                    cbEnableAimHead.Checked = !cbEnableAimHead.Checked;
-                    await DelayRecordKeyboardEvent(200);
-                }
                 else if ((GetAsyncKeyState(Keys.P) & 0x8000) != 0)      // P: un/check Aim Player
                 {
                     cbEnableAimPlayer.Checked = !cbEnableAimPlayer.Checked;
-                    await DelayRecordKeyboardEvent(200);
-                }
-
-                //else if ((GetAsyncKeyState(Keys.CapsLock) & 0x8000) != 0)      // P: screenshots image
-                //{
-                //    using Bitmap bitmap = ScreenshotCenter(_sizeX, _sizeY);
-                //    bitmap.Save(Path.Combine(Directory.GetCurrentDirectory(), "screenshots", $"{DateTimeOffset.Now.ToUnixTimeMilliseconds()}.png"), System.Drawing.Imaging.ImageFormat.Png);
-                //    await DelayRecordKeyboardEvent(200);
-                //}
-
-                await Task.Delay(10); // giảm CPU usage
-            }
-        }
-
-        private async Task ScreenshotEvent()
-        {
-            while (true)
-            {
-                if ((GetAsyncKeyState(Keys.CapsLock) & 0x8000) != 0)      // P: screenshots image
-                {
-                    using Bitmap bitmap = ScreenshotCenter(_sizeX, _sizeY);
-                    bitmap.Save(Path.Combine(Directory.GetCurrentDirectory(), "screenshots", $"{DateTimeOffset.Now.ToUnixTimeMilliseconds()}.png"), System.Drawing.Imaging.ImageFormat.Png);
                     await DelayRecordKeyboardEvent(200);
                 }
 
@@ -691,6 +622,11 @@ namespace auto_aim
 
         public static void SendInput(int deltaX, int deltaY)
         {
+            if (deltaX == 0 && deltaY == 0)
+            {
+                return; // Không cần gửi input nếu không có di chuyển
+            }
+
             // Tạo input move tương đối
             INPUT[] inputs = new INPUT[1];
             inputs[0].type = INPUT_MOUSE;
@@ -718,10 +654,10 @@ namespace auto_aim
 
             cbEnableDetection.Checked = Settings.Default.scbEnableDetection;
             cbDrawDetection.Checked = Settings.Default.scbDrawDetection;
-            cbEnableAimHead.Checked = Settings.Default.scbEnableAimHead;
             cbEnableAimPlayer.Checked = Settings.Default.scbEnableAimPlayer;
 
             cbExecutionProvider.Text = Settings.Default.scbExecutionProvider;
+            cbPrecision.Text = Settings.Default.scbPrecision;
 
             // load model
             var filesOnnx = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "model"), "*.onnx");
@@ -736,10 +672,10 @@ namespace auto_aim
 
             Settings.Default.scbEnableDetection = cbEnableDetection.Checked;
             Settings.Default.scbDrawDetection = cbDrawDetection.Checked;
-            Settings.Default.scbEnableAimHead = cbEnableAimHead.Checked;
             Settings.Default.scbEnableAimPlayer = cbEnableAimPlayer.Checked;
 
             Settings.Default.scbExecutionProvider = cbExecutionProvider.Text;
+            Settings.Default.scbPrecision = cbPrecision.Text;
             Settings.Default.scbModelName = cbModelName.Text;
 
             Settings.Default.Save();
@@ -813,5 +749,110 @@ namespace auto_aim
             }
         }
 
+        // sceenshot video
+        private void btStopDetectionVideo_Click(object sender, EventArgs e)
+        {
+            _yolo.StopVideoProcessing();
+        }
+
+        private void btScreenshotVideo_Click(object sender, EventArgs e)
+        {
+            if (_yolo == default)
+            {
+                MessageBox.Show("Apply ExecutionProvider && Model Name");
+                return;
+            }
+
+            string fileMp4 = @"C:\Users\InuYasha\Documents\VidCombo\PUBG RTX 4090 24GB ( 4K Ultra Graphics ).mp4";
+            Task.Run(() => DetectionVideo(fileMp4));
+        }
+
+        // ảnh mờ
+        private void DetectionVideo(string fileMp4)
+        {
+            // List all available video input devices detected on the system.
+            var devices = Yolo.GetVideoDevices();
+
+            // Set the video options.
+            VideoOptions videoOptions = new VideoOptions()
+            {
+                VideoInput = fileMp4,
+                VideoOutput = null,
+                FrameRate = FrameRate.AUTO,
+
+                CompressionQuality = 30,
+                VideoChunkDuration = 0,
+                FrameInterval = 0
+            };
+            _yolo.InitializeVideo(videoOptions);
+
+            // Display basic video metadata before processing begins.
+            var metadata = _yolo.GetVideoMetaData();
+
+            _yolo.OnVideoFrameReceived = (SKBitmap frame, long frameIndex) =>
+            {
+                if (frameIndex % 20 == 0)
+                {
+                    ScropeImage(frame);
+                }
+
+                // Display progress.
+                int progress = (int)((double)(frameIndex) / metadata.TargetTotalFrames * 100);
+                lbProcessBar.Text = $"{progress}% [frame {frameIndex} of {metadata.TargetTotalFrames}]";
+            };
+
+            // Start processing the video stream.
+            _yolo.StartVideoProcessing();
+        }
+
+        private void ScropeImage(SKBitmap skBitmap)
+        {
+            var results = _yolo.RunObjectDetection(skBitmap, confidence: 0.5).FilterLabels(["player", "person"]);
+            foreach (var result in results)
+            {
+                if (result.Confidence > 0.5)
+                {
+                    var bbox = result.BoundingBox;
+
+                    // ảnh quá lớn hoặc quá nhỏ
+                    if (bbox.Height > 300 || bbox.Height < 50) continue;
+
+                    // Tính center point
+                    var centerX = bbox.MidX;
+                    var centerY = bbox.MidY;
+
+                    // Cắt hình ảnh với kích thước 320x320 centered tại centerX/Y
+                    int cropWidth = 320;
+                    int cropHeight = 320;
+
+                    int left = (int)(centerX - cropWidth / 2);
+                    int top = (int)(centerY - cropHeight / 2);
+
+                    // Đảm bảo không vượt khỏi ảnh gốc
+                    left = Math.Max(0, Math.Min(left, skBitmap.Width - cropWidth));
+                    top = Math.Max(0, Math.Min(top, skBitmap.Height - cropHeight));
+
+                    var cropRect = new SKRectI(left, top, left + cropWidth, top + cropHeight);
+                    using var cropped = new SKBitmap(cropWidth, cropHeight);
+                    using (var canvas = new SKCanvas(cropped))
+                    {
+                        canvas.DrawBitmap(skBitmap, cropRect, new SKRect(0, 0, cropWidth, cropHeight));
+                    }
+
+                    // Lưu hình ảnh
+                    cropped.Save($"./screenshots-cropped-image/{DateTimeOffset.Now.ToUnixTimeMilliseconds()}.png", SKEncodedImageFormat.Png, 100);
+                }
+            }
+        }
+
+        private void btCropeImage_Click(object sender, EventArgs e)
+        {
+            var files = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "screenshots"));
+            foreach (var file in files)
+            {
+                SKBitmap skBitmap = SKBitmap.Decode(file);
+                ScropeImage(skBitmap);
+            }
+        }
     }
 }

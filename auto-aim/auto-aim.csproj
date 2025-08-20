@@ -37,10 +37,10 @@
     <None Update="img\img-test.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="model\best.onnx">
+    <None Update="model\note.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="model\note.txt">
+    <None Update="model\sunxds_0.5.6.cache">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="model\sunxds_0.5.6.onnx">
@@ -49,22 +49,13 @@
     <None Update="model\sunxds_0.5.6.pt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="model\sunxds_0.7.7.onnx">
+    <None Update="model\sunxds_0.7.8.cache">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="model\sunxds_0.7.7.pt">
+    <None Update="model\sunxds_0.7.8.onnx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="model\yolo11n.onnx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="model\yolo11n.pt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="model\yolov11s.cache">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="model\yolov11s.onnx">
+    <None Update="model\sunxds_0.7.8.pt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Properties\Settings.settings">

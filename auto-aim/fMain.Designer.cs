@@ -39,16 +39,22 @@
             nBitmapH = new NumericUpDown();
             label1 = new Label();
             label2 = new Label();
-            cbEnableAimHead = new CheckBox();
             cbEnableAimPlayer = new CheckBox();
-            cbDrawAllDetection = new CheckBox();
             cbExecutionProvider = new ComboBox();
             cbModelName = new ComboBox();
             btApplyModelType = new Button();
             cbPredictMove = new CheckBox();
             groupBox1 = new GroupBox();
+            lbProcessBar = new Label();
+            btStopDetectionVideo = new Button();
+            btScreenshotVideo = new Button();
             btYoloTrain = new Button();
+            btCropeImage = new Button();
             btYoloLabels = new Button();
+            cbShowPictureBoxDebug = new CheckBox();
+            cbAutoFocus = new CheckBox();
+            cbIsCircle = new CheckBox();
+            cbPrecision = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nBitmapW).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nBitmapH).BeginInit();
@@ -57,7 +63,7 @@
             // 
             // btStart
             // 
-            btStart.Location = new Point(642, 252);
+            btStart.Location = new Point(656, 266);
             btStart.Name = "btStart";
             btStart.Size = new Size(124, 45);
             btStart.TabIndex = 0;
@@ -110,9 +116,9 @@
             cbEnableGun1.AutoSize = true;
             cbEnableGun1.Location = new Point(445, 146);
             cbEnableGun1.Name = "cbEnableGun1";
-            cbEnableGun1.Size = new Size(120, 19);
+            cbEnableGun1.Size = new Size(193, 19);
             cbEnableGun1.TabIndex = 2;
-            cbEnableGun1.Text = "(1) - Enable Gun 1";
+            cbEnableGun1.Text = "(1 + Left Mouse) - Enable Gun 1";
             cbEnableGun1.UseVisualStyleBackColor = true;
             cbEnableGun1.CheckedChanged += cbEnableGun1_CheckedChanged;
             // 
@@ -121,9 +127,9 @@
             cbEnableGun2.AutoSize = true;
             cbEnableGun2.Location = new Point(445, 171);
             cbEnableGun2.Name = "cbEnableGun2";
-            cbEnableGun2.Size = new Size(120, 19);
+            cbEnableGun2.Size = new Size(132, 19);
             cbEnableGun2.TabIndex = 2;
-            cbEnableGun2.Text = "(2) - Enable Gun 2";
+            cbEnableGun2.Text = "(2)   -   Enable Gun 2";
             cbEnableGun2.UseVisualStyleBackColor = true;
             cbEnableGun2.CheckedChanged += cbEnableGun2_CheckedChanged;
             // 
@@ -167,17 +173,6 @@
             label2.TabIndex = 5;
             label2.Text = "Height:";
             // 
-            // cbEnableAimHead
-            // 
-            cbEnableAimHead.AutoSize = true;
-            cbEnableAimHead.Location = new Point(445, 78);
-            cbEnableAimHead.Name = "cbEnableAimHead";
-            cbEnableAimHead.Size = new Size(145, 19);
-            cbEnableAimHead.TabIndex = 2;
-            cbEnableAimHead.Text = "(H) - Enable Aim Head";
-            cbEnableAimHead.UseVisualStyleBackColor = true;
-            cbEnableAimHead.CheckedChanged += cbEnableAimHead_CheckedChanged;
-            // 
             // cbEnableAimPlayer
             // 
             cbEnableAimPlayer.AutoSize = true;
@@ -188,17 +183,6 @@
             cbEnableAimPlayer.Text = "(P) - Enable Aim Player";
             cbEnableAimPlayer.UseVisualStyleBackColor = true;
             cbEnableAimPlayer.CheckedChanged += cbEnableAimPlayer_CheckedChanged;
-            // 
-            // cbDrawAllDetection
-            // 
-            cbDrawAllDetection.AutoSize = true;
-            cbDrawAllDetection.Location = new Point(650, 37);
-            cbDrawAllDetection.Name = "cbDrawAllDetection";
-            cbDrawAllDetection.Size = new Size(130, 19);
-            cbDrawAllDetection.TabIndex = 2;
-            cbDrawAllDetection.Text = "Draw ALL Detection";
-            cbDrawAllDetection.UseVisualStyleBackColor = true;
-            cbDrawAllDetection.CheckedChanged += cbDrawAllDetection_CheckedChanged;
             // 
             // cbExecutionProvider
             // 
@@ -234,7 +218,7 @@
             // cbPredictMove
             // 
             cbPredictMove.AutoSize = true;
-            cbPredictMove.Location = new Point(540, 266);
+            cbPredictMove.Location = new Point(554, 280);
             cbPredictMove.Name = "cbPredictMove";
             cbPredictMove.Size = new Size(96, 19);
             cbPredictMove.TabIndex = 2;
@@ -244,13 +228,46 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(lbProcessBar);
+            groupBox1.Controls.Add(btStopDetectionVideo);
+            groupBox1.Controls.Add(btScreenshotVideo);
             groupBox1.Controls.Add(btYoloTrain);
+            groupBox1.Controls.Add(btCropeImage);
             groupBox1.Controls.Add(btYoloLabels);
             groupBox1.Location = new Point(418, 317);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(370, 136);
             groupBox1.TabIndex = 8;
             groupBox1.TabStop = false;
+            // 
+            // lbProcessBar
+            // 
+            lbProcessBar.AutoSize = true;
+            lbProcessBar.Location = new Point(130, 0);
+            lbProcessBar.Name = "lbProcessBar";
+            lbProcessBar.Size = new Size(64, 15);
+            lbProcessBar.TabIndex = 3;
+            lbProcessBar.Text = "processBar";
+            // 
+            // btStopDetectionVideo
+            // 
+            btStopDetectionVideo.Location = new Point(287, 58);
+            btStopDetectionVideo.Name = "btStopDetectionVideo";
+            btStopDetectionVideo.Size = new Size(75, 23);
+            btStopDetectionVideo.TabIndex = 2;
+            btStopDetectionVideo.Text = "Stop";
+            btStopDetectionVideo.UseVisualStyleBackColor = true;
+            btStopDetectionVideo.Click += btStopDetectionVideo_Click;
+            // 
+            // btScreenshotVideo
+            // 
+            btScreenshotVideo.Location = new Point(216, 22);
+            btScreenshotVideo.Name = "btScreenshotVideo";
+            btScreenshotVideo.Size = new Size(146, 30);
+            btScreenshotVideo.TabIndex = 0;
+            btScreenshotVideo.Text = "screenshot-video";
+            btScreenshotVideo.UseVisualStyleBackColor = true;
+            btScreenshotVideo.Click += btScreenshotVideo_Click;
             // 
             // btYoloTrain
             // 
@@ -262,6 +279,16 @@
             btYoloTrain.UseVisualStyleBackColor = true;
             btYoloTrain.Click += btYoloTrain_Click;
             // 
+            // btCropeImage
+            // 
+            btCropeImage.Location = new Point(6, 100);
+            btCropeImage.Name = "btCropeImage";
+            btCropeImage.Size = new Size(99, 30);
+            btCropeImage.TabIndex = 0;
+            btCropeImage.Text = "crope image";
+            btCropeImage.UseVisualStyleBackColor = true;
+            btCropeImage.Click += btCropeImage_Click;
+            // 
             // btYoloLabels
             // 
             btYoloLabels.Location = new Point(6, 22);
@@ -272,6 +299,49 @@
             btYoloLabels.UseVisualStyleBackColor = true;
             btYoloLabels.Click += btLabels_Click;
             // 
+            // cbShowPictureBoxDebug
+            // 
+            cbShowPictureBoxDebug.AutoSize = true;
+            cbShowPictureBoxDebug.Location = new Point(311, 418);
+            cbShowPictureBoxDebug.Name = "cbShowPictureBoxDebug";
+            cbShowPictureBoxDebug.Size = new Size(83, 19);
+            cbShowPictureBoxDebug.TabIndex = 2;
+            cbShowPictureBoxDebug.Text = "Show View";
+            cbShowPictureBoxDebug.UseVisualStyleBackColor = true;
+            cbShowPictureBoxDebug.CheckedChanged += cbShowView_CheckedChanged;
+            // 
+            // cbAutoFocus
+            // 
+            cbAutoFocus.AutoSize = true;
+            cbAutoFocus.Location = new Point(610, 171);
+            cbAutoFocus.Name = "cbAutoFocus";
+            cbAutoFocus.Size = new Size(162, 19);
+            cbAutoFocus.TabIndex = 2;
+            cbAutoFocus.Text = "(CAPSLOCK) - Auto focus";
+            cbAutoFocus.UseVisualStyleBackColor = true;
+            cbAutoFocus.CheckedChanged += cbAutoFocus_CheckedChanged;
+            // 
+            // cbIsCircle
+            // 
+            cbIsCircle.AutoSize = true;
+            cbIsCircle.Location = new Point(311, 443);
+            cbIsCircle.Name = "cbIsCircle";
+            cbIsCircle.Size = new Size(67, 19);
+            cbIsCircle.TabIndex = 2;
+            cbIsCircle.Text = "is Circle";
+            cbIsCircle.UseVisualStyleBackColor = true;
+            cbIsCircle.CheckedChanged += cbIsCircle_CheckedChanged;
+            // 
+            // cbPrecision
+            // 
+            cbPrecision.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbPrecision.FormattingEnabled = true;
+            cbPrecision.Items.AddRange(new object[] { "INT8", "FP16", "FP32" });
+            cbPrecision.Location = new Point(564, 247);
+            cbPrecision.Name = "cbPrecision";
+            cbPrecision.Size = new Size(86, 23);
+            cbPrecision.TabIndex = 6;
+            // 
             // fMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -279,6 +349,7 @@
             ClientSize = new Size(800, 465);
             Controls.Add(groupBox1);
             Controls.Add(btApplyModelType);
+            Controls.Add(cbPrecision);
             Controls.Add(cbModelName);
             Controls.Add(cbExecutionProvider);
             Controls.Add(label2);
@@ -287,12 +358,13 @@
             Controls.Add(nBitmapW);
             Controls.Add(lbFPS);
             Controls.Add(cbEnableDetection);
+            Controls.Add(cbAutoFocus);
             Controls.Add(cbEnableGun2);
             Controls.Add(cbEnableAimPlayer);
-            Controls.Add(cbEnableAimHead);
             Controls.Add(cbEnableGun1);
             Controls.Add(cbPredictMove);
-            Controls.Add(cbDrawAllDetection);
+            Controls.Add(cbIsCircle);
+            Controls.Add(cbShowPictureBoxDebug);
             Controls.Add(cbDrawDetection);
             Controls.Add(pictureBox);
             Controls.Add(btStart);
@@ -306,6 +378,7 @@
             ((System.ComponentModel.ISupportInitialize)nBitmapW).EndInit();
             ((System.ComponentModel.ISupportInitialize)nBitmapH).EndInit();
             groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -323,9 +396,7 @@
         private NumericUpDown nBitmapH;
         private Label label1;
         private Label label2;
-        private CheckBox cbEnableAimHead;
         private CheckBox cbEnableAimPlayer;
-        private CheckBox cbDrawAllDetection;
         private ComboBox cbExecutionProvider;
         private ComboBox cbModelName;
         private Button btApplyModelType;
@@ -333,5 +404,13 @@
         private GroupBox groupBox1;
         private Button btYoloLabels;
         private Button btYoloTrain;
+        private Button btScreenshotVideo;
+        private Button btStopDetectionVideo;
+        private Label lbProcessBar;
+        private Button btCropeImage;
+        private CheckBox cbShowPictureBoxDebug;
+        private CheckBox cbAutoFocus;
+        private CheckBox cbIsCircle;
+        private ComboBox cbPrecision;
     }
 }

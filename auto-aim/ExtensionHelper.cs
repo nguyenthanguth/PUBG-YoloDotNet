@@ -1,5 +1,4 @@
 ﻿using SkiaSharp;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 
 namespace auto_aim
@@ -12,6 +11,21 @@ namespace auto_aim
             using MemoryStream ms = new MemoryStream();
             bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
             return ms;
+        }
+
+        public static void DrawCross(this SKBitmap sKBitmap, int x_center, int y_center, int size_cross, SKColor color)
+        {
+            using (SKCanvas canvas = new SKCanvas(sKBitmap))
+            {
+                using SKPaint paint = new SKPaint
+                {
+                    Color = color,
+                    StrokeWidth = 2,
+                    IsAntialias = true
+                };
+                canvas.DrawLine(x_center - size_cross, y_center, x_center + size_cross, y_center, paint); // draw ngang
+                canvas.DrawLine(x_center, y_center - size_cross, x_center, y_center + size_cross, paint); // draw dọc
+            }
         }
         #endregion
 
